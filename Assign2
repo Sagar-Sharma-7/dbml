@@ -1,0 +1,277 @@
+mysql> show tables;
++-------------------------+
+| Tables_in_vanshika_ass2 |
++-------------------------+
+| company                 |
+| employee                |
+| manages                 |
+| works                   |
++-------------------------+
+4 rows in set (0.00 sec)
+
+mysql> describe company;
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| company_name | varchar(100) | NO   | PRI | NULL    |       |
+| city         | varchar(50)  | YES  |     | NULL    |       |
++--------------+--------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> describe employee
+    -> ;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| e_id   | int(11)      | NO   | PRI | NULL    |       |
+| name   | varchar(100) | YES  |     | NULL    |       |
+| street | varchar(100) | YES  |     | NULL    |       |
+| city   | varchar(50)  | YES  |     | NULL    |       |
++--------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> describe manages;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| e_id      | int(11)      | NO   | PRI | NULL    |       |
+| dept_name | varchar(100) | YES  |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> describe works;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| e_id         | int(11)       | NO   | PRI | NULL    |       |
+| company_name | varchar(100)  | NO   | PRI | NULL    |       |
+| salary       | decimal(10,2) | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> select* from company;
++-----------------+-----------+
+| company_name    | city      |
++-----------------+-----------+
+| Amazon          | Bangalore |
+| Deloitte        | Mumbai    |
+| Google          | Delhi     |
+| Infosys BPM     | Pune      |
+| Nykaa           | Delhi     |
+| Oracle          | Hyderabad |
+| Rapido          | Bangalore |
+| Reliance Retail | Mumbai    |
+| Torrent Power   | Ahmedabad |
+| Zoho            | Hyderabad |
++-----------------+-----------+
+10 rows in set (0.01 sec)
+
+mysql> select* from employee;
++------+----------+------------------+-----------+
+| e_id | name     | street           | city      |
++------+----------+------------------+-----------+
+|    1 | Nikhil   | BTM Layout       | Bangalore |
+|    2 | Shalini  | Lodhi Road       | Delhi     |
+|    3 | Yash     | Juhu Beach Road  | Mumbai    |
+|    4 | Tanvi    | Secunderabad     | Hyderabad |
+|    5 | Suresh   | Maninagar        | Ahmedabad |
+|    6 | Ritika   | Rajendra Nagar   | Delhi     |
+|    7 | Ajay     | Kandivali East   | Mumbai    |
+|    8 | Harshita | Madhapur Main Rd | Hyderabad |
+|    9 | Nitin    | Koregaon Park    | Pune      |
+|   10 | Ankita   | Paldi            | Ahmedabad |
+|   11 | Kunal    | Indiranagar      | Bangalore |
+|   12 | Bhavya   | Patel Nagar      | Delhi     |
+|   13 | Gaurav   | Santacruz East   | Mumbai    |
+|   14 | Snehal   | Koramangala      | Bangalore |
+|   15 | Preeti   | Hitech City      | Hyderabad |
++------+----------+------------------+-----------+
+15 rows in set (0.00 sec)
+
+mysql> select* from manages;
++------+-------------------+
+| e_id | dept_name         |
++------+-------------------+
+|    1 | Strategy          |
+|    2 | Accounting        |
+|    3 | Cloud Services    |
+|    4 | Brand Management  |
+|    5 | Infrastructure    |
+|    6 | UX Research       |
+|    7 | Supply Chain      |
+|    8 | Corporate Affairs |
+|    9 | Channel Sales     |
+|   10 | Help Desk         |
++------+-------------------+
+10 rows in set (0.00 sec)
+
+mysql> select* from works;
++------+---------------+----------+
+| e_id | company_name  | salary   |
++------+---------------+----------+
+|    1 | Amazon        | 88000.00 |
+|    2 | Deloitte      | 91000.00 |
+|    3 | Oracle        | 75000.00 |
+|    4 | Google        | 98000.00 |
+|    5 | Torrent Power | 69000.00 |
++------+---------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> notee;
+
+mysql> UPDATE works SET company_name = 'Google' WHERE e_id IN (10, 11, 14);
+Query OK, 3 rows affected (0.06 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+mysql> select* from works;
++------+-----------------+----------+
+| e_id | company_name    | salary   |
++------+-----------------+----------+
+|    1 | Amazon          | 88000.00 |
+|    2 | Deloitte        | 91000.00 |
+|    3 | Oracle          | 75000.00 |
+|    4 | Google          | 98000.00 |
+|    5 | Torrent Power   | 69000.00 |
+|    6 | Infosys BPM     | 72000.00 |
+|    7 | Reliance Retail | 78000.00 |
+|    8 | Nykaa           | 69000.00 |
+|    9 | Rapido          | 65000.00 |
+|   10 | Google          | 86000.00 |
+|   11 | Google          | 90000.00 |
+|   12 | Google          | 94000.00 |
+|   13 | Deloitte        | 80000.00 |
+|   14 | Google          | 77000.00 |
+|   15 | Torrent Power   | 71000.00 |
++------+-----------------+----------+
+15 rows in set (0.00 sec)
+
+mysql> create view google_employee as select e.e_id, e.name, e.city,w.salary from employee e join works w on e.e_id=w.e_id where w.company_name='Google';
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select* from google_employee;
++------+--------+-----------+----------+
+| e_id | name   | city      | salary   |
++------+--------+-----------+----------+
+|    4 | Tanvi  | Hyderabad | 98000.00 |
+|   10 | Ankita | Ahmedabad | 86000.00 |
+|   11 | Kunal  | Bangalore | 90000.00 |
+|   12 | Bhavya | Delhi     | 94000.00 |
+|   14 | Snehal | Bangalore | 77000.00 |
++------+--------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> create view employee_names_cities as select name,city from employee;
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> RENAME TABLE employee_names_cities to city_of_employee;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> select* from city_of_employee;
++----------+-----------+
+| name     | city      |
++----------+-----------+
+| Nikhil   | Bangalore |
+| Shalini  | Delhi     |
+| Yash     | Mumbai    |
+| Tanvi    | Hyderabad |
+| Suresh   | Ahmedabad |
+| Ritika   | Delhi     |
+| Ajay     | Mumbai    |
+| Harshita | Hyderabad |
+| Nitin    | Pune      |
+| Ankita   | Ahmedabad |
+| Kunal    | Bangalore |
+| Bhavya   | Delhi     |
+| Gaurav   | Mumbai    |
+| Snehal   | Bangalore |
+| Preeti   | Hyderabad |
++----------+-----------+
+19 rows in set (0.00 sec)
+
+mysql> CREATE INDEX idx_employee_city ON employee(city);
+Query OK, 0 rows affected (0.39 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM employee;
++----------+------------+-------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table    | Non_unique | Key_name          | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++----------+------------+-------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| employee |          0 | PRIMARY           |            1 | e_id        | A         |          19 |     NULL | NULL   |      | BTREE      |         |               |
+| employee |          1 | idx_employee_city |            1 | city        | A         |           6 |     NULL | NULL   | YES  | BTREE      |         |               |
++----------+------------+-------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+2 rows in set (0.01 sec)
+
+mysql> DROP INDEX idx_employee_city ON employee;
+Query OK, 0 rows affected (0.13 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM employee;
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+| employee |          0 | PRIMARY  |            1 | e_id        | A         |          19 |     NULL | NULL   |      | BTREE      |         |               |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+1 row in set (0.00 sec)
+
+mysql> CREATE TABLE employee_positions (
+    ->     sr_no INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    ->     position VARCHAR(100),
+    ->     salary DECIMAL(10,2)
+    -> );
+Query OK, 0 rows affected (0.23 sec)
+
+mysql> INSERT INTO employee_positions (position, salary) VALUES
+    -> ('Manager', 90000.00),
+    -> ('Developer', 75000.00),
+    -> ('Designer', 65000.00),
+    -> ('Analyst', 60000.00),
+    -> ('Tester', 55000.00),
+    -> ('HR', 50000.00),
+    -> ('Support Engineer', 48000.00),
+    -> ('Team Lead', 80000.00),
+    -> ('Intern', 30000.00),
+    -> ('Consultant', 85000.00);
+Query OK, 10 rows affected (0.03 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> select* from employee_positions;
++-------+------------------+----------+
+| sr_no | position         | salary   |
++-------+------------------+----------+
+|     1 | Manager          | 90000.00 |
+|     2 | Developer        | 75000.00 |
+|     3 | Designer         | 65000.00 |
+|     4 | Analyst          | 60000.00 |
+|     5 | Tester           | 55000.00 |
+|     6 | HR               | 50000.00 |
+|     7 | Support Engineer | 48000.00 |
+|     8 | Team Lead        | 80000.00 |
+|     9 | Intern           | 30000.00 |
+|    10 | Consultant       | 85000.00 |
++-------+------------------+----------+
+10 rows in set (0.00 sec)
+
+mysql> INSERT INTO employee_positions (position, salary) VALUES
+    -> ('Clerk', 50000.00);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> select* from employee_positions;
++-------+------------------+----------+
+| sr_no | position         | salary   |
++-------+------------------+----------+
+|     1 | Manager          | 90000.00 |
+|     2 | Developer        | 75000.00 |
+|     3 | Designer         | 65000.00 |
+|     4 | Analyst          | 60000.00 |
+|     5 | Tester           | 55000.00 |
+|     6 | HR               | 50000.00 |
+|     7 | Support Engineer | 48000.00 |
+|     8 | Team Lead        | 80000.00 |
+|     9 | Intern           | 30000.00 |
+|    10 | Consultant       | 85000.00 |
+|    11 | Clerk            | 50000.00 |
++-------+------------------+----------+
+11 rows in set (0.00 sec)
+
+mysql> notee
+

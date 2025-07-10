@@ -1,0 +1,299 @@
+mysql> INSERT INTO employee (e_id, street, city) VALUES
+    -> (18, 'MG Road','Pune'),
+    -> (19, 'Park Avenue', 'Mumbai');
+Query OK, 2 rows affected (0.05 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> SELECT e_id, name FROM employee;
++------+----------+
+| e_id | name     |
++------+----------+
+|    1 | Nikhil   |
+|    2 | Shalini  |
+|    3 | Yash     |
+|    4 | Tanvi    |
+|    5 | Suresh   |
+|    6 | Ritika   |
+|    7 | Ajay     |
+|    8 | Harshita |
+|    9 | Nitin    |
+|   10 | Ankita   |
+|   11 | Kunal    |
+|   12 | Bhavya   |
+|   13 | Gaurav   |
+|   14 | Snehal   |
+|   15 | Preeti   |
+|   16 | NULL     |
+|   17 | NULL     |
+|   18 | NULL     |
+|   19 | NULL     |
++------+----------+
+19 rows in set (0.00 sec)
+
+mysql> select e.name, m.dept_name from employee e, manages m where e.e_id=m.e_id;
++----------+-------------------+
+| name     | dept_name         |
++----------+-------------------+
+| Nikhil   | Strategy          |
+| Shalini  | Accounting        |
+| Yash     | Cloud Services    |
+| Tanvi    | Brand Management  |
+| Suresh   | Infrastructure    |
+| Ritika   | UX Research       |
+| Ajay     | Supply Chain      |
+| Harshita | Corporate Affairs |
+| Nitin    | Channel Sales     |
+| Ankita   | Help Desk         |
++----------+-------------------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT DISTINCT city
+    -> FROM company;
++-----------+
+| city      |
++-----------+
+| Bangalore |
+| Mumbai    |
+| Delhi     |
+| Pune      |
+| Hyderabad |
+| Ahmedabad |
++-----------+
+6 rows in set (0.02 sec)
+
+mysql> UPDATE employee
+    -> SET street = 'MG Road',
+    ->     city = 'Mumbai'
+    -> WHERE e_id = 1;
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select* from employee;
++------+----------+------------------+-----------+
+| e_id | name     | street           | city      |
++------+----------+------------------+-----------+
+|    1 | Nikhil   | MG Road          | Mumbai    |
+|    2 | Shalini  | Lodhi Road       | Delhi     |
+|    3 | Yash     | Juhu Beach Road  | Mumbai    |
+|    4 | Tanvi    | Secunderabad     | Hyderabad |
+|    5 | Suresh   | Maninagar        | Ahmedabad |
+|    6 | Ritika   | Rajendra Nagar   | Delhi     |
+|    7 | Ajay     | Kandivali East   | Mumbai    |
+|    8 | Harshita | Madhapur Main Rd | Hyderabad |
+|    9 | Nitin    | Koregaon Park    | Pune      |
+|   10 | Ankita   | Paldi            | Ahmedabad |
+|   11 | Kunal    | Indiranagar      | Bangalore |
+|   12 | Bhavya   | Patel Nagar      | Delhi     |
+|   13 | Gaurav   | Santacruz East   | Mumbai    |
+|   14 | Snehal   | Koramangala      | Bangalore |
+|   15 | Preeti   | Hitech City      | Hyderabad |
+|   16 | NULL     | MG Road          | Pune      |
+|   17 | NULL     | Park Avenue      | Mumbai    |
+|   18 | NULL     | MG Road          | Pune      |
+|   19 | NULL     | Park Avenue      | Mumbai    |
++------+----------+------------------+-----------+
+19 rows in set (0.00 sec)
+
+mysql> UPDATE works
+    -> SET salary = salary + 50
+    -> WHERE company_name = 'Google';
+Query OK, 5 rows affected (0.03 sec)
+Rows matched: 5  Changed: 5  Warnings: 0
+
+mysql> select* from works;
++------+-----------------+----------+
+| e_id | company_name    | salary   |
++------+-----------------+----------+
+|    1 | Amazon          | 88000.00 |
+|    2 | Deloitte        | 91000.00 |
+|    3 | Oracle          | 75000.00 |
+|    4 | Google          | 98050.00 |
+|    5 | Torrent Power   | 69000.00 |
+|    6 | Infosys BPM     | 72000.00 |
+|    7 | Reliance Retail | 78000.00 |
+|    8 | Nykaa           | 69000.00 |
+|    9 | Rapido          | 65000.00 |
+|   10 | Google          | 86050.00 |
+|   11 | Google          | 90050.00 |
+|   12 | Google          | 94050.00 |
+|   13 | Deloitte        | 80000.00 |
+|   14 | Google          | 77050.00 |
+|   15 | Torrent Power   | 71000.00 |
++------+-----------------+----------+
+15 rows in set (0.00 sec)
+
+mysql> SELECT company_name
+    -> FROM company
+    -> WHERE city LIKE 'P%' OR city LIKE 'B%';
++--------------+
+| company_name |
++--------------+
+| Amazon       |
+| Infosys BPM  |
+| Rapido       |
++--------------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT *
+    -> FROM employee
+    -> WHERE e_id IN (
+    ->     SELECT e_id
+    ->     FROM works
+    ->     WHERE company_name IN ('Oracle', 'Rapido', 'Google')
+    -> );
++------+--------+-----------------+-----------+
+| e_id | name   | street          | city      |
++------+--------+-----------------+-----------+
+|    3 | Yash   | Juhu Beach Road | Mumbai    |
+|    4 | Tanvi  | Secunderabad    | Hyderabad |
+|    9 | Nitin  | Koregaon Park   | Pune      |
+|   10 | Ankita | Paldi           | Ahmedabad |
+|   11 | Kunal  | Indiranagar     | Bangalore |
+|   12 | Bhavya | Patel Nagar     | Delhi     |
+|   14 | Snehal | Koramangala     | Bangalore |
++------+--------+-----------------+-----------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT AVG(salary) AS avg_salary
+    -> FROM works
+    -> WHERE company_name = 'Google';
++--------------+
+| avg_salary   |
++--------------+
+| 89050.000000 |
++--------------+
+1 row in set (0.01 sec)
+
+mysql> SELECT COUNT(*) AS total_employees
+    -> FROM works
+    -> WHERE company_name = 'Google';
++-----------------+
+| total_employees |
++-----------------+
+|               5 |
++-----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT 
+    ->     MAX(salary) AS max_salary,
+    ->     MIN(salary) AS min_salary
+    -> FROM works
+    -> WHERE company_name = 'Google';
++------------+------------+
+| max_salary | min_salary |
++------------+------------+
+|   98050.00 |   77050.00 |
++------------+------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT SUM(salary) AS total_salaries
+    -> FROM works
+    -> WHERE company_name = 'Google';
++----------------+
+| total_salaries |
++----------------+
+|      445250.00 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT *
+    -> FROM company
+    -> ORDER BY company_name ASC, city DESC;
++-----------------+-----------+
+| company_name    | city      |
++-----------------+-----------+
+| Amazon          | Bangalore |
+| Deloitte        | Mumbai    |
+| Google          | Delhi     |
+| Infosys BPM     | Pune      |
+| Nykaa           | Delhi     |
+| Oracle          | Hyderabad |
+| Rapido          | Bangalore |
+| Reliance Retail | Mumbai    |
+| Torrent Power   | Ahmedabad |
+| Zoho            | Hyderabad |
++-----------------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT name
+    -> FROM employee
+    -> WHERE e_id IN (
+    ->     SELECT e_id FROM works WHERE company_name = 'Amazon'
+    -> )
+    -> 
+    -> UNION
+    -> 
+    -> SELECT name
+    -> FROM employee
+    -> WHERE e_id IN (
+    ->     SELECT e_id FROM works WHERE company_name = 'Google'
+    -> );
++--------+
+| name   |
++--------+
+| Nikhil |
+| Tanvi  |
+| Ankita |
+| Kunal  |
+| Bhavya |
+| Snehal |
++--------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT name FROM employee WHERE e_id IN (     SELECT e_id FROM works WHERE company_name = 'Amazon' )  UNION ALL  SELECT name FROM employee WHERE e_id IN (     SELECT e_id FROM works WHERE company_name = 'Google' );
++--------+
+| name   |
++--------+
+| Nikhil |
+| Tanvi  |
+| Ankita |
+| Kunal  |
+| Bhavya |
+| Snehal |
++--------+
+6 rows in set (0.00 sec)
+
+mysql> SELECT *
+    -> FROM employee e
+    -> WHERE e.e_id IN (
+    ->     SELECT m.e_id
+    ->     FROM manages m
+    -> );
++------+----------+------------------+-----------+
+| e_id | name     | street           | city      |
++------+----------+------------------+-----------+
+|    1 | Nikhil   | MG Road          | Mumbai    |
+|    2 | Shalini  | Lodhi Road       | Delhi     |
+|    3 | Yash     | Juhu Beach Road  | Mumbai    |
+|    4 | Tanvi    | Secunderabad     | Hyderabad |
+|    5 | Suresh   | Maninagar        | Ahmedabad |
+|    6 | Ritika   | Rajendra Nagar   | Delhi     |
+|    7 | Ajay     | Kandivali East   | Mumbai    |
+|    8 | Harshita | Madhapur Main Rd | Hyderabad |
+|    9 | Nitin    | Koregaon Park    | Pune      |
+|   10 | Ankita   | Paldi            | Ahmedabad |
++------+----------+------------------+-----------+
+10 rows in set (0.02 sec)
+
+mysql> SELECT *
+    -> FROM employee
+    -> WHERE e_id NOT IN (
+    ->     SELECT e_id
+    ->     FROM manages
+    -> );
++------+--------+----------------+-----------+
+| e_id | name   | street         | city      |
++------+--------+----------------+-----------+
+|   11 | Kunal  | Indiranagar    | Bangalore |
+|   12 | Bhavya | Patel Nagar    | Delhi     |
+|   13 | Gaurav | Santacruz East | Mumbai    |
+|   14 | Snehal | Koramangala    | Bangalore |
+|   15 | Preeti | Hitech City    | Hyderabad |
+|   16 | NULL   | MG Road        | Pune      |
+|   17 | NULL   | Park Avenue    | Mumbai    |
+|   18 | NULL   | MG Road        | Pune      |
+|   19 | NULL   | Park Avenue    | Mumbai    |
++------+--------+----------------+-----------+
+9 rows in set (0.00 sec)
+
+mysql> NOTEE;
