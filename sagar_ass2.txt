@@ -1,0 +1,663 @@
+mysql> show tables;
++-------------------+
+| Tables_in_ass2    |
++-------------------+
+| company           |
+| employee          |
+| infosys_employees |
+| manages           |
+| works             |
++-------------------+
+5 rows in set (0.00 sec)
+
+mysql> describe company;
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| company_name | varchar(100) | NO   | PRI | NULL    |       |
+| city         | varchar(50)  | YES  |     | NULL    |       |
++--------------+--------------+------+-----+---------+-------+
+2 rows in set (0.01 sec)
+
+mysql> describe employee;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| e_id   | int          | NO   | PRI | NULL    |       |
+| name   | varchar(100) | YES  |     | NULL    |       |
+| street | varchar(100) | YES  |     | NULL    |       |
+| city   | varchar(50)  | YES  |     | NULL    |       |
++--------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> describe infosys_employees;
++--------+---------------+------+-----+---------+-------+
+| Field  | Type          | Null | Key | Default | Extra |
++--------+---------------+------+-----+---------+-------+
+| e_id   | int           | NO   |     | NULL    |       |
+| name   | varchar(100)  | YES  |     | NULL    |       |
+| city   | varchar(50)   | YES  |     | NULL    |       |
+| salary | decimal(10,2) | YES  |     | NULL    |       |
++--------+---------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> describe manages;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| e_id      | int          | NO   | PRI | NULL    |       |
+| dept_name | varchar(100) | YES  |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> describe works;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| e_id         | int           | NO   | PRI | NULL    |       |
+| company_name | varchar(100)  | NO   | PRI | NULL    |       |
+| salary       | decimal(10,2) | YES  |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> select * from employee;
++------+---------+-----------------+-----------+
+| e_id | name    | street          | city      |
++------+---------+-----------------+-----------+
+|    1 | Ravi    | MG Road         | Delhi     |
+|    2 | Anjali  | Park Street     | Mumbai    |
+|    3 | Vikram  | Residency Road  | Bangalore |
+|    4 | Pooja   | Banjara Hills   | Hyderabad |
+|    5 | Amit    | Satellite Road  | Ahmedabad |
+|    6 | Neha    | Connaught Place | Delhi     |
+|    7 | Rajesh  | Marine Drive    | Mumbai    |
+|    8 | Kiran   | Jubilee Hills   | Hyderabad |
+|    9 | Sneha   | FC Road         | Pune      |
+|   10 | Manoj   | CG Road         | Ahmedabad |
+|   11 | Deepika | Brigade Road    | Bangalore |
+|   12 | Arjun   | Rajouri Garden  | Delhi     |
+|   13 | Priya   | Linking Road    | Mumbai    |
+|   14 | Tarun   | HSR Layout      | Bangalore |
+|   15 | Isha    | Begumpet        | Hyderabad |
++------+---------+-----------------+-----------+
+15 rows in set (0.00 sec)
+
+mysql> select * from works;
++------+--------------+----------+
+| e_id | company_name | salary   |
++------+--------------+----------+
+|    1 | Infosys      | 75000.00 |
+|    2 | TCS          | 82000.00 |
+|    3 | Wipro        | 68000.00 |
+|    4 | HCL          | 90000.00 |
+|    5 | Adani Group  | 72000.00 |
+|    6 | Infosys      | 80000.00 |
+|    7 | Infosys      | 85000.00 |
+|    8 | Infosys      | 95000.00 |
+|    9 | Infosys      | 40000.00 |
++------+--------------+----------+
+9 rows in set (0.00 sec)
+
+mysql> select * from company;
++---------------+-----------+
+| company_name  | city      |
++---------------+-----------+
+| Adani Group   | Ahmedabad |
+| Cognizant     | Hyderabad |
+| HCL           | Delhi     |
+| Infosys       | Bangalore |
+| Ola Cabs      | Bangalore |
+| Reliance      | Mumbai    |
+| TCS           | Mumbai    |
+| Tech Mahindra | Pune      |
+| Wipro         | Hyderabad |
+| Zomato        | Delhi     |
++---------------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> select * from manages;
++------+------------------+
+| e_id | dept_name        |
++------+------------------+
+|    1 | Human Resources  |
+|    2 | Finance          |
+|    3 | Engineering      |
+|    4 | Marketing        |
+|    5 | IT Support       |
+|    6 | Product          |
+|    7 | Operations       |
+|    8 | Legal            |
+|    9 | Sales            |
+|   10 | Customer Service |
++------+------------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from infosys_employees;
++------+--------+-----------+----------+
+| e_id | name   | city      | salary   |
++------+--------+-----------+----------+
+|    1 | Ravi   | Delhi     | 75000.00 |
+|    6 | Neha   | Delhi     | 80000.00 |
+|    7 | Rajesh | Mumbai    | 85000.00 |
+|    8 | Kiran  | Hyderabad | 95000.00 |
+|    9 | Sneha  | Pune      | 40000.00 |
++------+--------+-----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> INSERT INTO employee VALUES
+    -> (16, 'Suresh', 'MG Road', 'Delhi'),
+    -> (17, 'Ramesh', 'Baner Road', 'Pune');
+Query OK, 2 rows affected (0.05 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from employee;
++------+---------+-----------------+-----------+
+| e_id | name    | street          | city      |
++------+---------+-----------------+-----------+
+|    1 | Ravi    | MG Road         | Delhi     |
+|    2 | Anjali  | Park Street     | Mumbai    |
+|    3 | Vikram  | Residency Road  | Bangalore |
+|    4 | Pooja   | Banjara Hills   | Hyderabad |
+|    5 | Amit    | Satellite Road  | Ahmedabad |
+|    6 | Neha    | Connaught Place | Delhi     |
+|    7 | Rajesh  | Marine Drive    | Mumbai    |
+|    8 | Kiran   | Jubilee Hills   | Hyderabad |
+|    9 | Sneha   | FC Road         | Pune      |
+|   10 | Manoj   | CG Road         | Ahmedabad |
+|   11 | Deepika | Brigade Road    | Bangalore |
+|   12 | Arjun   | Rajouri Garden  | Delhi     |
+|   13 | Priya   | Linking Road    | Mumbai    |
+|   14 | Tarun   | HSR Layout      | Bangalore |
+|   15 | Isha    | Begumpet        | Hyderabad |
+|   16 | Suresh  | MG Road         | Delhi     |
+|   17 | Ramesh  | Baner Road      | Pune      |
++------+---------+-----------------+-----------+
+17 rows in set (0.00 sec)
+
+mysql> INSERT INTO employee (e_id, name, city)
+    -> VALUES 
+    -> (16, 'Suresh', 'Hyderabad'),
+    -> (17, 'Ramesh', 'Mumbai');
+ERROR 1062 (23000): Duplicate entry '16' for key 'employee.PRIMARY'
+mysql> INSERT INTO employee (e_id, name, city) VALUES  (18, 'Suresh', 'Hyderabad'), (19, 'Ramesh', 'Mumbai');
+Query OK, 2 rows affected (0.07 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> select * from employee;
++------+---------+-----------------+-----------+
+| e_id | name    | street          | city      |
++------+---------+-----------------+-----------+
+|    1 | Ravi    | MG Road         | Delhi     |
+|    2 | Anjali  | Park Street     | Mumbai    |
+|    3 | Vikram  | Residency Road  | Bangalore |
+|    4 | Pooja   | Banjara Hills   | Hyderabad |
+|    5 | Amit    | Satellite Road  | Ahmedabad |
+|    6 | Neha    | Connaught Place | Delhi     |
+|    7 | Rajesh  | Marine Drive    | Mumbai    |
+|    8 | Kiran   | Jubilee Hills   | Hyderabad |
+|    9 | Sneha   | FC Road         | Pune      |
+|   10 | Manoj   | CG Road         | Ahmedabad |
+|   11 | Deepika | Brigade Road    | Bangalore |
+|   12 | Arjun   | Rajouri Garden  | Delhi     |
+|   13 | Priya   | Linking Road    | Mumbai    |
+|   14 | Tarun   | HSR Layout      | Bangalore |
+|   15 | Isha    | Begumpet        | Hyderabad |
+|   16 | Suresh  | MG Road         | Delhi     |
+|   17 | Ramesh  | Baner Road      | Pune      |
+|   18 | Suresh  | NULL            | Hyderabad |
+|   19 | Ramesh  | NULL            | Mumbai    |
++------+---------+-----------------+-----------+
+19 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> select * from company;
++---------------+-----------+
+| company_name  | city      |
++---------------+-----------+
+| Adani Group   | Ahmedabad |
+| Cognizant     | Hyderabad |
+| HCL           | Delhi     |
+| Infosys       | Bangalore |
+| Ola Cabs      | Bangalore |
+| Reliance      | Mumbai    |
+| TCS           | Mumbai    |
+| Tech Mahindra | Pune      |
+| Wipro         | Hyderabad |
+| Zomato        | Delhi     |
++---------------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> select e_id, name from employee;
++------+---------+
+| e_id | name    |
++------+---------+
+|    1 | Ravi    |
+|    2 | Anjali  |
+|    3 | Vikram  |
+|    4 | Pooja   |
+|    5 | Amit    |
+|    6 | Neha    |
+|    7 | Rajesh  |
+|    8 | Kiran   |
+|    9 | Sneha   |
+|   10 | Manoj   |
+|   11 | Deepika |
+|   12 | Arjun   |
+|   13 | Priya   |
+|   14 | Tarun   |
+|   15 | Isha    |
+|   16 | Suresh  |
+|   17 | Ramesh  |
+|   18 | Suresh  |
+|   19 | Ramesh  |
++------+---------+
+19 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> select e.name, m.dept_name from employee e, manages m where e.e_id = m.e_id;
++--------+------------------+
+| name   | dept_name        |
++--------+------------------+
+| Ravi   | Human Resources  |
+| Anjali | Finance          |
+| Vikram | Engineering      |
+| Pooja  | Marketing        |
+| Amit   | IT Support       |
+| Neha   | Product          |
+| Rajesh | Operations       |
+| Kiran  | Legal            |
+| Sneha  | Sales            |
+| Manoj  | Customer Service |
++--------+------------------+
+10 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> CREATE VIEW infosys_employees_filtered AS
+    -> SELECT e_id, name, city, salary
+    -> FROM infosys_employees
+    -> WHERE salary > 50000;
+Query OK, 0 rows affected (0.09 sec)
+
+mysql> DROP VIEW IF EXISTS infosys_employees;
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> show tables;
++----------------------------+
+| Tables_in_ass2             |
++----------------------------+
+| company                    |
+| employee                   |
+| infosys_employees_filtered |
+| manages                    |
+| works                      |
++----------------------------+
+5 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> show tables;
++----------------------------+
+| Tables_in_ass2             |
++----------------------------+
+| company                    |
+| employee                   |
+| infosys_employees          |
+| infosys_employees_filtered |
+| manages                    |
+| works                      |
++----------------------------+
+6 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> CREATE INDEX idx_city ON employee(city);
+Query OK, 0 rows affected (0.46 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> select * from employee;
++------+---------+-----------------+-----------+
+| e_id | name    | street          | city      |
++------+---------+-----------------+-----------+
+|    1 | Ravi    | MG Road         | Delhi     |
+|    2 | Anjali  | Park Street     | Mumbai    |
+|    3 | Vikram  | Residency Road  | Bangalore |
+|    4 | Pooja   | Banjara Hills   | Hyderabad |
+|    5 | Amit    | Satellite Road  | Ahmedabad |
+|    6 | Neha    | Connaught Place | Delhi     |
+|    7 | Rajesh  | Marine Drive    | Mumbai    |
+|    8 | Kiran   | Jubilee Hills   | Hyderabad |
+|    9 | Sneha   | FC Road         | Pune      |
+|   10 | Manoj   | CG Road         | Ahmedabad |
+|   11 | Deepika | Brigade Road    | Bangalore |
+|   12 | Arjun   | Rajouri Garden  | Delhi     |
+|   13 | Priya   | Linking Road    | Mumbai    |
+|   14 | Tarun   | HSR Layout      | Bangalore |
+|   15 | Isha    | Begumpet        | Hyderabad |
+|   16 | Suresh  | MG Road         | Delhi     |
+|   17 | Ramesh  | Baner Road      | Pune      |
+|   18 | Suresh  | NULL            | Hyderabad |
+|   19 | Ramesh  | NULL            | Mumbai    |
++------+---------+-----------------+-----------+
+19 rows in set (0.00 sec)
+
+mysql> SHOW INDEX FROM employee;
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| employee |          0 | PRIMARY  |            1 | e_id        | A         |          19 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| employee |          1 | idx_city |            1 | city        | A         |           6 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+2 rows in set (0.05 sec)
+
+mysql> DESCRIBE employee;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| e_id   | int          | NO   | PRI | NULL    |       |
+| name   | varchar(100) | YES  |     | NULL    |       |
+| street | varchar(100) | YES  |     | NULL    |       |
+| city   | varchar(50)  | YES  | MUL | NULL    |       |
++--------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> DESCRIBE employee;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| e_id   | int          | NO   | PRI | NULL    |       |
+| name   | varchar(100) | YES  |     | NULL    |       |
+| street | varchar(100) | YES  |     | NULL    |       |
+| city   | varchar(50)  | YES  | MUL | NULL    |       |
++--------+--------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> DESCRIBE employee;
++--------+--------------+------+-----+---------+-------+
+| Field  | Type         | Null | Key | Default | Extra |
++--------+--------------+------+-----+---------+-------+
+| e_id   | int          | NO   | PRI | NULL    |       |
+| name   | varchar(100) | YES  |     | NULL    |       |
+| street | varchar(100) | YES  |     | NULL    |       |
+| city   | varchar(50)  | YES  | MUL | NULL    |       |
++--------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> DROP INDEX idx_city ON employee;
+Query OK, 0 rows affected (0.16 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW INDEX FROM employee;
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| employee |          0 | PRIMARY  |            1 | e_id        | A         |          19 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++----------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+1 row in set (0.00 sec)
+
+mysql> notee;\
+mysql> ALTER TABLE employee MODIFY COLUMN e_id INT AUTO_INCREMENT;
+ERROR 1833 (HY000): Cannot change column 'e_id': used in a foreign key constraint 'works_ibfk_1' of table 'ass2.works'
+mysql> notee;
+mysql> CREATE TABLE position_salaries (
+    ->     srno INT AUTO_INCREMENT PRIMARY KEY,         -- Serial number with auto-increment
+    ->     position VARCHAR(255) NOT NULL,              -- Position of the employee
+    ->     salary DECIMAL(10, 2) NOT NULL,              -- Salary, formatted to allow two decimal places
+    ->     dept_name VARCHAR(255),                      -- Department, referenced from manages table
+    ->     effective_date DATE,                         -- The date the salary is effective
+    ->     FOREIGN KEY (dept_name) REFERENCES manages(dept_name)  -- Foreign key referencing dept_name in manages
+    -> );
+ERROR 1822 (HY000): Failed to add the foreign key constraint. Missing index for constraint 'position_salaries_ibfk_1' in the referenced table 'manages'
+mysql> CREATE TABLE position_salaries (
+    ->     srno INT AUTO_INCREMENT PRIMARY KEY,      -- Serial number with auto-increment
+    ->     position VARCHAR(255) NOT NULL,           -- Position of the employee
+    ->     salary DECIMAL(10, 2) NOT NULL,           -- Salary, formatted to allow two decimal places
+    ->     effective_date DATE NOT NULL              -- The date the salary is effective
+    -> );
+Query OK, 0 rows affected (0.40 sec)
+
+mysql> INSERT INTO position_salaries (position, salary, effective_date)
+    -> VALUES
+    -> ('Software Engineer', 75000.00, '2025-07-01'),
+    -> ('HR Manager', 90000.00, '2025-07-01'),
+    -> ('Marketing Specialist', 65000.00, '2025-07-01'),
+    -> ('Product Manager', 110000.00, '2025-07-01'),
+    -> ('Sales Executive', 70000.00, '2025-07-01');
+Query OK, 5 rows affected (0.08 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> show tables;
++----------------------------+
+| Tables_in_ass2             |
++----------------------------+
+| company                    |
+| employee                   |
+| infosys_employees          |
+| infosys_employees_filtered |
+| manages                    |
+| position_salaries          |
+| works                      |
++----------------------------+
+7 rows in set (0.00 sec)
+
+mysql> select * from position_salaries;
++------+----------------------+-----------+----------------+
+| srno | position             | salary    | effective_date |
++------+----------------------+-----------+----------------+
+|    1 | Software Engineer    |  75000.00 | 2025-07-01     |
+|    2 | HR Manager           |  90000.00 | 2025-07-01     |
+|    3 | Marketing Specialist |  65000.00 | 2025-07-01     |
+|    4 | Product Manager      | 110000.00 | 2025-07-01     |
+|    5 | Sales Executive      |  70000.00 | 2025-07-01     |
++------+----------------------+-----------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> SELECT DISTINCT city
+    -> FROM company;
++-----------+
+| city      |
++-----------+
+| Ahmedabad |
+| Hyderabad |
+| Delhi     |
+| Bangalore |
+| Mumbai    |
+| Pune      |
++-----------+
+6 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> UPDATE employee
+    -> SET street = '123 MG Road', city = 'Bangalore'
+    -> WHERE e_id = 19;
+Query OK, 1 row affected (0.07 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select * from employee;
++------+---------+-----------------+-----------+
+| e_id | name    | street          | city      |
++------+---------+-----------------+-----------+
+|    1 | Ravi    | MG Road         | Delhi     |
+|    2 | Anjali  | Park Street     | Mumbai    |
+|    3 | Vikram  | Residency Road  | Bangalore |
+|    4 | Pooja   | Banjara Hills   | Hyderabad |
+|    5 | Amit    | Satellite Road  | Ahmedabad |
+|    6 | Neha    | Connaught Place | Delhi     |
+|    7 | Rajesh  | Marine Drive    | Mumbai    |
+|    8 | Kiran   | Jubilee Hills   | Hyderabad |
+|    9 | Sneha   | FC Road         | Pune      |
+|   10 | Manoj   | CG Road         | Ahmedabad |
+|   11 | Deepika | Brigade Road    | Bangalore |
+|   12 | Arjun   | Rajouri Garden  | Delhi     |
+|   13 | Priya   | Linking Road    | Mumbai    |
+|   14 | Tarun   | HSR Layout      | Bangalore |
+|   15 | Isha    | Begumpet        | Hyderabad |
+|   16 | Suresh  | MG Road         | Delhi     |
+|   17 | Ramesh  | Baner Road      | Pune      |
+|   18 | Suresh  | NULL            | Hyderabad |
+|   19 | Ramesh  | 123 MG Road     | Bangalore |
++------+---------+-----------------+-----------+
+19 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> UPDATE works
+    -> SET salary = salary + 500
+    -> WHERE company_name = 'Infosys';
+Query OK, 5 rows affected (0.09 sec)
+Rows matched: 5  Changed: 5  Warnings: 0
+
+mysql> select * from works;
++------+--------------+----------+
+| e_id | company_name | salary   |
++------+--------------+----------+
+|    1 | Infosys      | 75500.00 |
+|    2 | TCS          | 82000.00 |
+|    3 | Wipro        | 68000.00 |
+|    4 | HCL          | 90000.00 |
+|    5 | Adani Group  | 72000.00 |
+|    6 | Infosys      | 80500.00 |
+|    7 | Infosys      | 85500.00 |
+|    8 | Infosys      | 95500.00 |
+|    9 | Infosys      | 40500.00 |
++------+--------------+----------+
+9 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> select company_name from company where city like 'p%' or city like 'b%';
++---------------+
+| company_name  |
++---------------+
+| Infosys       |
+| Ola Cabs      |
+| Tech Mahindra |
++---------------+
+3 rows in set (0.00 sec)
+
+mysql> select * from employee where e_id in (select e_id from works where company_name in ('Infosys', 'TCS');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> select * from employee where e_id in (select e_id from works where company_name in ('Infosys', 'TCS'));
++------+--------+-----------------+-----------+
+| e_id | name   | street          | city      |
++------+--------+-----------------+-----------+
+|    1 | Ravi   | MG Road         | Delhi     |
+|    2 | Anjali | Park Street     | Mumbai    |
+|    6 | Neha   | Connaught Place | Delhi     |
+|    7 | Rajesh | Marine Drive    | Mumbai    |
+|    8 | Kiran  | Jubilee Hills   | Hyderabad |
+|    9 | Sneha  | FC Road         | Pune      |
++------+--------+-----------------+-----------+
+6 rows in set (0.01 sec)
+
+mysql> select avg(salary) as avg_salary from works where company_name = 'infosys';
++--------------+
+| avg_salary   |
++--------------+
+| 75500.000000 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select count(*) as total_employee from works where company_name = 'infosys';
++----------------+
+| total_employee |
++----------------+
+|              5 |
++----------------+
+1 row in set (0.00 sec)
+
+mysql> select max(salary) as max_salary, min(salary) as min_salary from works where company_name='infosys';
++------------+------------+
+| max_salary | min_salary |
++------------+------------+
+|   95500.00 |   40500.00 |
++------------+------------+
+1 row in set (0.00 sec)
+
+mysql> select sum(salary) as total_salary from works where company_name = 'infosys';
++--------------+
+| total_salary |
++--------------+
+|    377500.00 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql> select * from compan order by company_name asc, city desc;
+ERROR 1146 (42S02): Table 'ass2.compan' doesn't exist
+mysql> select * from company order by company_name asc, city desc;
++---------------+-----------+
+| company_name  | city      |
++---------------+-----------+
+| Adani Group   | Ahmedabad |
+| Cognizant     | Hyderabad |
+| HCL           | Delhi     |
+| Infosys       | Bangalore |
+| Ola Cabs      | Bangalore |
+| Reliance      | Mumbai    |
+| TCS           | Mumbai    |
+| Tech Mahindra | Pune      |
+| Wipro         | Hyderabad |
+| Zomato        | Delhi     |
++---------------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> notee;
+mysql> select name from employee where e_id in (select e_id from works where company_name = 'infosys')
+    -> union
+    -> select name from employee where e_id in (select e_id from works where company_name = 'TCS');
++--------+
+| name   |
++--------+
+| Ravi   |
+| Neha   |
+| Rajesh |
+| Kiran  |
+| Sneha  |
+| Anjali |
++--------+
+6 rows in set (0.00 sec)
+
+mysql> select name from employee where e_id in (select e_id from works where company_name = 'infosys') union all select name from employee where e_id in (select e_id from works where company_name = 'TCS');
++--------+
+| name   |
++--------+
+| Ravi   |
+| Neha   |
+| Rajesh |
+| Kiran  |
+| Sneha  |
+| Anjali |
++--------+
+6 rows in set (0.00 sec)
+
+mysql> select * from employee where e_id in (select e_id from manages);
++------+--------+-----------------+-----------+
+| e_id | name   | street          | city      |
++------+--------+-----------------+-----------+
+|    1 | Ravi   | MG Road         | Delhi     |
+|    2 | Anjali | Park Street     | Mumbai    |
+|    3 | Vikram | Residency Road  | Bangalore |
+|    4 | Pooja  | Banjara Hills   | Hyderabad |
+|    5 | Amit   | Satellite Road  | Ahmedabad |
+|    6 | Neha   | Connaught Place | Delhi     |
+|    7 | Rajesh | Marine Drive    | Mumbai    |
+|    8 | Kiran  | Jubilee Hills   | Hyderabad |
+|    9 | Sneha  | FC Road         | Pune      |
+|   10 | Manoj  | CG Road         | Ahmedabad |
++------+--------+-----------------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> select * from employee where e_id not in (select e_id from manages);
++------+---------+----------------+-----------+
+| e_id | name    | street         | city      |
++------+---------+----------------+-----------+
+|   11 | Deepika | Brigade Road   | Bangalore |
+|   12 | Arjun   | Rajouri Garden | Delhi     |
+|   13 | Priya   | Linking Road   | Mumbai    |
+|   14 | Tarun   | HSR Layout     | Bangalore |
+|   15 | Isha    | Begumpet       | Hyderabad |
+|   16 | Suresh  | MG Road        | Delhi     |
+|   17 | Ramesh  | Baner Road     | Pune      |
+|   18 | Suresh  | NULL           | Hyderabad |
+|   19 | Ramesh  | 123 MG Road    | Bangalore |
++------+---------+----------------+-----------+
+9 rows in set (0.00 sec)
+
+mysql> notee;
