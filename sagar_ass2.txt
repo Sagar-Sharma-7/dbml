@@ -1,3 +1,107 @@
+mysql> CREATE DATABASE IF NOT EXISTS ass2;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE ass2;
+Database changed
+
+mysql> CREATE TABLE employee (
+    -> e_id INT PRIMARY KEY,
+    -> name VARCHAR(100),
+    -> street VARCHAR(100),
+    -> city VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE company (
+    -> company_name VARCHAR(100) PRIMARY KEY,
+    -> city VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE works (
+    -> e_id INT,
+    -> company_name VARCHAR(100),
+    -> salary DECIMAL(10,2),
+    -> PRIMARY KEY (e_id, company_name),
+    -> FOREIGN KEY (e_id) REFERENCES employee(e_id),
+    -> FOREIGN KEY (company_name) REFERENCES company(company_name)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE manages (
+    -> e_id INT PRIMARY KEY,
+    -> dept_name VARCHAR(100),
+    -> FOREIGN KEY (e_id) REFERENCES employee(e_id)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> INSERT INTO employee VALUES
+    -> (1, 'Ravi', 'MG Road', 'Delhi'),
+    -> (2, 'Anjali', 'Park Street', 'Mumbai'),
+    -> (3, 'Vikram', 'Residency Road', 'Bangalore'),
+    -> (4, 'Pooja', 'Banjara Hills', 'Hyderabad'),
+    -> (5, 'Amit', 'Satellite Road', 'Ahmedabad'),
+    -> (6, 'Neha', 'Connaught Place', 'Delhi'),
+    -> (7, 'Rajesh', 'Marine Drive', 'Mumbai'),
+    -> (8, 'Kiran', 'Jubilee Hills', 'Hyderabad'),
+    -> (9, 'Sneha', 'FC Road', 'Pune'),
+    -> (10, 'Manoj', 'CG Road', 'Ahmedabad'),
+    -> (11, 'Deepika', 'Brigade Road', 'Bangalore'),
+    -> (12, 'Arjun', 'Rajouri Garden', 'Delhi'),
+    -> (13, 'Priya', 'Linking Road', 'Mumbai'),
+    -> (14, 'Tarun', 'HSR Layout', 'Bangalore'),
+    -> (15, 'Isha', 'Begumpet', 'Hyderabad');
+Query OK, 15 rows affected (0.05 sec)
+Records: 15  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO company VALUES
+    -> ('Adani Group', 'Ahmedabad'),
+    -> ('Cognizant', 'Hyderabad'),
+    -> ('HCL', 'Delhi'),
+    -> ('Infosys', 'Bangalore'),
+    -> ('Ola Cabs', 'Bangalore'),
+    -> ('Reliance', 'Mumbai'),
+    -> ('TCS', 'Mumbai'),
+    -> ('Tech Mahindra', 'Pune'),
+    -> ('Wipro', 'Hyderabad'),
+    -> ('Zomato', 'Delhi');
+Query OK, 10 rows affected (0.04 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO works VALUES
+    -> (1, 'Infosys', 75500.00),
+    -> (2, 'TCS', 82000.00),
+    -> (3, 'Wipro', 68000.00),
+    -> (4, 'HCL', 90000.00),
+    -> (5, 'Adani Group', 72000.00),
+    -> (6, 'Infosys', 80500.00),
+    -> (7, 'Infosys', 85500.00),
+    -> (8, 'Infosys', 95500.00),
+    -> (9, 'Infosys', 40500.00);
+Query OK, 9 rows affected (0.03 sec)
+Records: 9  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO manages VALUES
+    -> (1, 'Human Resources'),
+    -> (2, 'Finance'),
+    -> (3, 'Engineering'),
+    -> (4, 'Marketing'),
+    -> (5, 'IT Support'),
+    -> (6, 'Product'),
+    -> (7, 'Operations'),
+    -> (8, 'Legal'),
+    -> (9, 'Sales'),
+    -> (10, 'Customer Service');
+Query OK, 10 rows affected (0.02 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> CREATE VIEW infosys_employees AS
+    -> SELECT e.e_id, e.name, e.city, w.salary
+    -> FROM employee e
+    -> JOIN works w ON e.e_id = w.e_id
+    -> WHERE w.company_name = 'Infosys';
+Query OK, 0 rows affected (0.01 sec)
+
 mysql> show tables;
 +-------------------+
 | Tables_in_ass2    |
