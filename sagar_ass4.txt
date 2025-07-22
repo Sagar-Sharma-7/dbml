@@ -1,0 +1,134 @@
+mysql> CREATE TABLE Borrower (
+    ->     Rollno       INT PRIMARY KEY,
+    ->     Name         VARCHAR(100),
+    ->     DateofIssue  DATE,
+    ->     NameofBook   VARCHAR(200),
+    ->     Status       CHAR(1)  -- 'I' for Issued, 'R' for Returned
+    -> );
+Query OK, 0 rows affected (0.38 sec)
+
+mysql> Create table Fine (
+    -> Roll_no int,
+    -> date DATE,
+    -> Amt decimal(10,2),
+    -> foreign key (Roll_no) references Borrower(Rollno)
+    -> );
+Query OK, 0 rows affected (1.16 sec)
+
+mysql> notee;
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE return_book (
+    ->   IN p_rollno INT,
+    ->   IN p_bookname VARCHAR(200)
+    -> )
+    -> BEGIN
+    -> DECLARE v_date_of_issue DATE;
+    -> DECLARE v_days INT;
+    -> DECLARE v_fine DECIMAL(10, 2) DEFAULT 0;
+    -> DECLARE v_status CHAR(1);
+    -> 
+    -> DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    -> BEGIN
+    -> SELECT 'An error occurred. Please check inputs or try again.' AS Error;
+    -> 
+    -> END;
+    -> 
+    -> SELECT DateofIssue, Status INTO v_date_of_issue, v_status FROM Borrower
+    -> WHERE Rollno = p_rollno AND NameofBook = p_bookname;
+    -> 
+    -> IF v_status = 'R' then
+    -> SELECT 'Book has already been returned.' AS Message;
+    -> ELSE
+    -> SET v_days = DATEDIFF(CURDATE(), v_date_of_issue);
+    -> 
+    -> If v_days > 30 THEN
+    -> set v_fine = (v_days - 30) * 50 + (15 * 5);
+    -> ELSEIF v_days > 15 THEN
+    -> set v_fine = (v_days - 15) * 5;
+    -> END IF;
+    -> 
+    -> UPDATE Borrower
+    -> SET Status = 'R'
+    -> WHERE Rollno = p_rollno AND NameofBook = p_bookname;
+    -> 
+    -> IF v_fine > 0 THEN
+    -> INSERT INTO Fine (Roll_no, Date, Amt)
+    -> VALUES (P_rollno, CURDATE(), v_fine);
+    -> END IF;
+    -> 
+    -> SELECT 'Book returned successfully.' AS Message, v_days AS Days_Borrowed, v_fine AS Fine;
+    -> END IF;
+    -> END;
+    -> //
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> notee;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'notee' at line 1
+mysql> notee //
+mysql> -- Issued books (Status = 'I')
+mysql> INSERT INTO Borrower (Rollno, Name, DateofIssue, NameofBook, Status)
+    -> VALUES 
+    -> (102, 'Priya', '2025-06-10', 'Operating Systems', 'I'),
+    -> (103, 'Ravi', '2025-07-10', 'Computer Networks', 'I'),
+    -> (104, 'Neha', '2025-06-01', 'Java Programming', 'I'),
+    -> (105, 'Arjun', '2025-07-01', 'Data Structures', 'I'),
+    -> (106, 'Sneha', '2025-07-20', 'Machine Learning', 'I');
+    -> 
+    -> -- Already returned book (Status = 'R')
+    -> INSERT INTO Borrower (Rollno, Name, DateofIssue, NameofBook, Status)
+    -> VALUES 
+    -> (107, 'Rahul', '2025-06-15', 'Cloud Computing', 'R');
+    -> //
+Query OK, 5 rows affected (0.09 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+Query OK, 1 row affected (0.16 sec)
+
+mysql> select * from Borrower;
+    -> //
++--------+-------+-------------+-------------------+--------+
+| Rollno | Name  | DateofIssue | NameofBook        | Status |
++--------+-------+-------------+-------------------+--------+
+|    101 | Aman  | 2025-07-01  | Database Systems  | R      |
+|    102 | Priya | 2025-06-10  | Operating Systems | I      |
+|    103 | Ravi  | 2025-07-10  | Computer Networks | I      |
+|    104 | Neha  | 2025-06-01  | Java Programming  | I      |
+|    105 | Arjun | 2025-07-01  | Data Structures   | I      |
+|    106 | Sneha | 2025-07-20  | Machine Learning  | I      |
+|    107 | Rahul | 2025-06-15  | Cloud Computing   | R      |
++--------+-------+-------------+-------------------+--------+
+7 rows in set (0.00 sec)
+
+mysql> INSERT INTO Fine (Roll_no, Date, Amt)
+    -> VALUES 
+    -> (107, '2025-07-10', 325.00);
+    -> //
+Query OK, 1 row affected (0.10 sec)
+
+mysql> CALL return_book(102, 'Operating Systems');
+    -> //
++-----------------------------+---------------+--------+
+| Message                     | Days_Borrowed | Fine   |
++-----------------------------+---------------+--------+
+| Book returned successfully. |            42 | 675.00 |
++-----------------------------+---------------+--------+
+1 row in set (0.17 sec)
+
+Query OK, 0 rows affected (0.17 sec)
+
+mysql> CALL return_book(107, 'Cloud Computing');
+    -> //
++---------------------------------+
+| Message                         |
++---------------------------------+
+| Book has already been returned. |
++---------------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> notee;
+    -> //
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'notee' at line 1
+mysql> notee //
