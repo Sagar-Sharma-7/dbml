@@ -1,0 +1,41 @@
+mysql> create table areas(
+    -> radius decimal(5,2),
+    -> area decimal(10,2)
+    -> );
+Query OK, 0 rows affected (0.43 sec)
+
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE calculate_area()
+    -> BEGIN
+    -> DECLARE radius decimal(5,2);
+    -> DECLARE area decimal(10,2);
+    -> DECLARE i INT DEFAULT 5;
+    -> while i <= 9 do
+    -> set radius = i;
+    -> set area = 3.14159 * radius * radius;
+    -> insert into areas(radius, area) values (radius, area);
+    -> set i = i + 1;
+    -> end while;
+    -> end//
+Query OK, 0 rows affected (0.13 sec)
+
+mysql> delimiter ;
+mysql> select * from areas;
+Empty set (0.00 sec)
+
+mysql> call calculate_area();
+Query OK, 1 row affected (0.47 sec)
+
+mysql> select * from areas;
++--------+--------+
+| radius | area   |
++--------+--------+
+|   5.00 |  78.54 |
+|   6.00 | 113.10 |
+|   7.00 | 153.94 |
+|   8.00 | 201.06 |
+|   9.00 | 254.47 |
++--------+--------+
+5 rows in set (0.00 sec)
+
+mysql> notee;
