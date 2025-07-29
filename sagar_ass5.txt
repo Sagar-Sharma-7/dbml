@@ -1,0 +1,123 @@
+mysql> CREATE TABLE Stud_Marks (
+    ->     name VARCHAR(100),
+    ->     total_marks INT
+    -> );
+Query OK, 0 rows affected (0.32 sec)
+
+mysql> CREATE TABLE Result (
+    ->     Roll INT AUTO_INCREMENT PRIMARY KEY,
+    ->     Name VARCHAR(100),
+    ->     Class VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.46 sec)
+
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE FUNCTION Grade_Categorization (marks INT) 
+    -> RETURNS VARCHAR(50)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE grade VARCHAR(50);
+    ->     
+    ->     -- User-defined exception for invalid marks
+    ->     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    ->         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid Marks Value';
+    ->     
+    ->     -- Check for valid marks range
+    ->     IF marks < 0 OR marks > 1500 THEN
+    ->         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Marks must be between 0 and 1500';
+    ->     END IF;
+    ->     
+    ->     -- Categorize the grade based on marks
+    ->     IF marks >= 990 AND marks <= 1500 THEN
+    ->         SET grade = 'Distinction';
+    ->     ELSEIF marks >= 900 AND marks <= 989 THEN
+    ->         SET grade = 'First Class';
+    ->     ELSEIF marks >= 825 AND marks <= 899 THEN
+    ->         SET grade = 'Higher Second Class';
+    ->     ELSE
+    ->         SET grade = 'Not Categorized';
+    ->     END IF;
+    -> 
+    ->     RETURN grade;
+    -> END //
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE PROCEDURE proc_Grade()
+    -> BEGIN
+    ->     DECLARE done INT DEFAULT 0;
+    ->     DECLARE v_name VARCHAR(100);
+    ->     DECLARE v_total_marks INT;
+    ->     DECLARE v_grade VARCHAR(50);
+    ->     
+    ->     -- Declare the cursor first (before the handler)
+    ->     DECLARE student_cursor CURSOR FOR 
+    ->         SELECT name, total_marks FROM Stud_Marks;
+    ->     
+    ->     -- Declare the CONTINUE handler for NOT FOUND (before the cursor)
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    -> 
+    ->     -- Declare the CONTINUE handler for SQL exceptions (before the cursor)
+    ->     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    ->         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error occurred during procedure execution';
+    -> 
+    ->     -- Open the cursor to read student data
+    ->     OPEN student_cursor;
+    -> 
+    ->     -- Loop to process each student's data
+    ->     read_loop: LOOP
+    ->         FETCH student_cursor INTO v_name, v_total_marks;
+    ->         IF done THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    ->         
+    ->         -- Call the function to get the student's grade based on marks
+    ->         BEGIN
+    ->             -- Using exception handling inside the procedure
+    ->             DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    ->                 SET v_grade = 'Error in Grade Categorization';
+    ->             SET v_grade = Grade_Categorization(v_total_marks);
+    ->         END;
+    ->         
+    ->         -- Insert the result into the Result table
+    ->         INSERT INTO Result (Name, Class) VALUES (v_name, v_grade);
+    ->     END LOOP;
+    -> 
+    ->     -- Close the cursor
+    ->     CLOSE student_cursor;
+    -> 
+    ->     -- Commit the transaction
+    ->     COMMIT;
+    -> END //
+Query OK, 0 rows affected (0.10 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> INSERT INTO Stud_Marks (name, total_marks) 
+    -> VALUES 
+    ->     ('Aarav', 1200),
+    ->     ('Isha', 950),
+    ->     ('Ravi', 880),
+    ->     ('Priya', 800);
+Query OK, 4 rows affected (0.10 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> CALL proc_Grade();
+Query OK, 0 rows affected (0.28 sec)
+
+mysql> SELECT * FROM Result;
++------+-------+---------------------+
+| Roll | Name  | Class               |
++------+-------+---------------------+
+|    1 | Aarav | Distinction         |
+|    2 | Isha  | First Class         |
+|    3 | Ravi  | Higher Second Class |
+|    4 | Priya | Not Categorized     |
++------+-------+---------------------+
+4 rows in set (0.00 sec)
+
+mysql> notee;
