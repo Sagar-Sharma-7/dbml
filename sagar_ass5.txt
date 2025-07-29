@@ -1,0 +1,115 @@
+mysql> use sagar_ass5;
+Database changed
+mysql> CREATE TABLE Stud_Marks (
+    ->     name VARCHAR(100),
+    ->     total_marks INT
+    -> );
+Query OK, 0 rows affected (0.47 sec)
+
+mysql> CREATE TABLE Result (
+    ->     Roll INT AUTO_INCREMENT PRIMARY KEY,
+    ->     Name VARCHAR(100),
+    ->     Class VARCHAR(50)
+    -> );
+Query OK, 0 rows affected (0.86 sec)
+
+mysql> -- Function to categorize the student based on marks
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE FUNCTION Grade_Categorization (marks INT) 
+    -> RETURNS VARCHAR(50)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE grade VARCHAR(50);
+    -> 
+    ->     IF marks >= 990 AND marks <= 1500 THEN
+    ->         SET grade = 'Distinction';
+    ->     ELSEIF marks >= 900 AND marks <= 989 THEN
+    ->         SET grade = 'First Class';
+    ->     ELSEIF marks >= 825 AND marks <= 899 THEN
+    ->         SET grade = 'Higher Second Class';
+    ->     ELSE
+    ->         SET grade = 'Not Categorized';
+    ->     END IF;
+    -> 
+    ->     RETURN grade;
+    -> END //
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> -- Stored Procedure to process student grades and insert into the Result table
+mysql> DELIMITER //
+mysql> 
+mysql> CREATE PROCEDURE proc_Grade()
+    -> BEGIN
+    ->     DECLARE done INT DEFAULT 0;
+    ->     DECLARE v_name VARCHAR(100);
+    ->     DECLARE v_total_marks INT;
+    ->     DECLARE v_grade VARCHAR(50);
+    ->     DECLARE student_cursor CURSOR FOR 
+    ->         SELECT name, total_marks FROM Stud_Marks;
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    -> 
+    ->     OPEN student_cursor;
+    -> 
+    ->     read_loop: LOOP
+    ->         FETCH student_cursor INTO v_name, v_total_marks;
+    ->         IF done THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    ->         
+    ->         -- Call the function to get the student's grade based on marks
+    ->         SET v_grade = Grade_Categorization(v_total_marks);
+    ->         
+    ->         -- Insert the result into the Result table
+    ->         INSERT INTO Result (Name, Class) VALUES (v_name, v_grade);
+    ->     END LOOP;
+    -> 
+    ->     CLOSE student_cursor;
+    -> 
+    ->     -- Commit the transaction (in case it's part of a larger transaction)
+    ->     COMMIT;
+    -> END //
+Query OK, 0 rows affected (0.15 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> INSERT INTO Stud_Marks (name, total_marks) 
+    -> VALUES 
+    ->     ('Aarav', 1200),
+    ->     ('Isha', 950),
+    ->     ('Ravi', 880),
+    ->     ('Priya', 800);
+Query OK, 4 rows affected (0.09 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * from Stud_Marks;
++-------+-------------+
+| name  | total_marks |
++-------+-------------+
+| Aarav |        1200 |
+| Isha  |         950 |
+| Ravi  |         880 |
+| Priya |         800 |
++-------+-------------+
+4 rows in set (0.01 sec)
+
+mysql> SELECT * from Result;
+Empty set (0.00 sec)
+
+mysql> CALL proc_Grade();
+Query OK, 0 rows affected (0.28 sec)
+
+mysql> SELECT * from Result;
++------+-------+---------------------+
+| Roll | Name  | Class               |
++------+-------+---------------------+
+|    1 | Aarav | Distinction         |
+|    2 | Isha  | First Class         |
+|    3 | Ravi  | Higher Second Class |
+|    4 | Priya | Not Categorized     |
++------+-------+---------------------+
+4 rows in set (0.00 sec)
+
+mysql> notee;
