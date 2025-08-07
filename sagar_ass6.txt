@@ -1,0 +1,138 @@
+mysql> use sagar_ass6;
+Database changed
+mysql> CREATE TABLE O_RollCall (
+    ->     id INT PRIMARY KEY,
+    ->     name VARCHAR(255) NOT NULL,
+    ->     roll_call_date DATE NOT NULL
+    -> );
+Query OK, 0 rows affected (0.33 sec)
+
+mysql> CREATE TABLE N_RollCall (
+    ->     id INT PRIMARY KEY,
+    ->     name VARCHAR(255) NOT NULL,
+    ->     roll_call_date DATE NOT NULL
+    -> );
+Query OK, 0 rows affected (0.34 sec)
+
+mysql> INSERT INTO N_RollCall (id, name, roll_call_date)
+    -> VALUES 
+    ->     (1, 'Amit', '2025-08-01'),
+    ->     (2, 'Priya', '2025-08-02'),
+    ->     (3, 'Rahul', '2025-08-03'),
+    ->     (4, 'Sanya', '2025-08-04'),
+    ->     (5, 'Vikram', '2025-08-05'),
+    ->     (6, 'Neha', '2025-08-06'),
+    ->     (7, 'Arjun', '2025-08-07'),
+    ->     (8, 'Kavita', '2025-08-08');
+Query OK, 8 rows affected (0.09 sec)
+Records: 8  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO O_RollCall VALUES (11, 'Sagar', '2005-08-22');
+Query OK, 1 row affected (0.08 sec)
+
+mysql> DELIMITER $$
+mysql> 
+mysql> CREATE PROCEDURE MergeRollCallData()
+    -> BEGIN
+    ->     DECLARE done INT DEFAULT 0;
+    ->     DECLARE n_id INT;
+    ->     DECLARE n_name VARCHAR(255);
+    ->     DECLARE n_date DATE;
+    -> 
+    ->     DECLARE cur CURSOR FOR
+    ->         SELECT id, name, roll_call_date FROM N_RollCall;
+    -> 
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    -> 
+    ->     OPEN cur;
+    -> 
+    ->     read_loop: LOOP
+    ->         FETCH cur INTO n_id, n_name, n_date;
+    -> 
+    ->         IF done THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    -> 
+    ->         IF NOT EXISTS (
+    ->             SELECT 1 
+    ->             FROM O_RollCall 
+    ->             WHERE id = n_id 
+    ->               AND name = n_name 
+    ->               AND roll_call_date = n_date
+    ->         ) THEN
+    ->             INSERT INTO O_RollCall (id, name, roll_call_date)
+    ->             VALUES (n_id, n_name, n_date);
+    ->         END IF;
+    -> 
+    ->     END LOOP;
+    -> 
+    ->     CLOSE cur;
+    -> 
+    -> END $$
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '  DECLARE done INT DEFAULT 0;
+    DECLARE n_id INT;
+    DECLARE n_name VARC' at line 3
+mysql> 
+mysql> DELIMITER ;
+mysql> DELIMITER $$
+mysql> 
+mysql> CREATE PROCEDURE MergeRollCallData()
+    -> BEGIN
+    ->     DECLARE done INT DEFAULT 0;
+    ->     DECLARE n_id INT;
+    ->     DECLARE n_name VARCHAR(255);
+    ->     DECLARE n_date DATE;
+    -> 
+    ->     DECLARE cur CURSOR FOR
+    ->         SELECT id, name, roll_call_date FROM N_RollCall;
+    -> 
+    ->     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    -> 
+    ->     OPEN cur;
+    -> 
+    ->     read_loop: LOOP
+    ->         FETCH cur INTO n_id, n_name, n_date;
+    -> 
+    ->         IF done THEN
+    ->             LEAVE read_loop;
+    ->         END IF;
+    -> 
+    ->         IF NOT EXISTS (
+    ->             SELECT 1 
+    ->             FROM O_RollCall 
+    ->             WHERE id = n_id 
+    ->               AND name = n_name 
+    ->               AND roll_call_date = n_date
+    ->         ) THEN
+    ->             INSERT INTO O_RollCall (id, name, roll_call_date)
+    ->             VALUES (n_id, n_name, n_date);
+    ->         END IF;
+    -> 
+    ->     END LOOP;
+    -> 
+    ->     CLOSE cur;
+    -> END $$
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> 
+mysql> DELIMITER ;
+mysql> CALL MergeRollCallData();
+Query OK, 0 rows affected (0.88 sec)
+
+mysql> select * from O_RollCall;
++----+--------+----------------+
+| id | name   | roll_call_date |
++----+--------+----------------+
+|  1 | Amit   | 2025-08-01     |
+|  2 | Priya  | 2025-08-02     |
+|  3 | Rahul  | 2025-08-03     |
+|  4 | Sanya  | 2025-08-04     |
+|  5 | Vikram | 2025-08-05     |
+|  6 | Neha   | 2025-08-06     |
+|  7 | Arjun  | 2025-08-07     |
+|  8 | Kavita | 2025-08-08     |
+| 11 | Sagar  | 2005-08-22     |
++----+--------+----------------+
+9 rows in set (0.00 sec)
+
+mysql> notee;
