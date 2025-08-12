@@ -1,0 +1,198 @@
+mysql> use sagar_practest1;
+Database changed
+mysql> CREATE TABLE customer (
+    ->     cust_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     c_name VARCHAR(100) NOT NULL,
+    ->     c_address VARCHAR(255) NOT NULL
+    -> );
+Query OK, 0 rows affected (1.10 sec)
+
+mysql> CREATE TABLE product (
+    ->     product_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     product_desc VARCHAR(255) NOT NULL,
+    ->     unit_price DECIMAL(10, 2) NOT NULL
+    -> );
+Query OK, 0 rows affected (0.80 sec)
+
+mysql> CREATE TABLE order (
+    ->     order_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     order_date DATE NOT NULL,
+    ->     cust_id INT,
+    ->     FOREIGN KEY (cust_id) REFERENCES customer(cust_id)
+    -> );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_date DATE NOT NUL' at line 1
+mysql> CREATE TABLE orders (
+    ->     order_id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     order_date DATE NOT NULL,
+    ->     cust_id INT,
+    ->     FOREIGN KEY (cust_id) REFERENCES customer(cust_id)
+    -> );
+Query OK, 0 rows affected (0.96 sec)
+
+mysql> notee;
+mysql> INSERT INTO customer (c_name, c_address) VALUES
+    -> ('Ram', '1234, MG Road, Delhi'),
+    -> ('Sita', '56, B Block, Mumbai'),
+    -> ('Shyam', '789, Main Street, Bangalore'),
+    -> ('Radha', '101, Green Park, Pune');
+Query OK, 4 rows affected (0.10 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO product (product_desc, unit_price) VALUES
+    -> ('Mobile Phone', 15000.00),
+    -> ('Laptop', 50000.00),
+    -> ('Headphones', 2500.00),
+    -> ('Watch', 3500.00),
+    -> ('Luxury Car', 2500000.00),
+    -> ('Diamond Necklace', 200000.00),
+    -> ('High-End Laptop', 120000.00),
+    -> ('Designer Handbag', 75000.00),
+    -> ('Premium Camera', 95000.00),
+    -> ('Luxury Watch', 150000.00);
+Query OK, 10 rows affected (0.07 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO orders (order_date, cust_id) VALUES
+    -> ('2025-08-01', 1),
+    -> ('2025-08-05', 2),
+    -> ('2025-08-10', 3),
+    -> ('2025-08-12', 4);
+Query OK, 4 rows affected (0.09 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> notee;
+mysql> select * from product;
++------------+------------------+------------+
+| product_id | product_desc     | unit_price |
++------------+------------------+------------+
+|          1 | Mobile Phone     |   15000.00 |
+|          2 | Laptop           |   50000.00 |
+|          3 | Headphones       |    2500.00 |
+|          4 | Watch            |    3500.00 |
+|          5 | Luxury Car       | 2500000.00 |
+|          6 | Diamond Necklace |  200000.00 |
+|          7 | High-End Laptop  |  120000.00 |
+|          8 | Designer Handbag |   75000.00 |
+|          9 | Premium Camera   |   95000.00 |
+|         10 | Luxury Watch     |  150000.00 |
++------------+------------------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from customer;
++---------+--------+-----------------------------+
+| cust_id | c_name | c_address                   |
++---------+--------+-----------------------------+
+|       1 | Ram    | 1234, MG Road, Delhi        |
+|       2 | Sita   | 56, B Block, Mumbai         |
+|       3 | Shyam  | 789, Main Street, Bangalore |
+|       4 | Radha  | 101, Green Park, Pune       |
++---------+--------+-----------------------------+
+4 rows in set (0.00 sec)
+
+mysql> select * from orders;
++----------+------------+---------+
+| order_id | order_date | cust_id |
++----------+------------+---------+
+|        1 | 2025-08-01 |       1 |
+|        2 | 2025-08-05 |       2 |
+|        3 | 2025-08-10 |       3 |
+|        4 | 2025-08-12 |       4 |
++----------+------------+---------+
+4 rows in set (0.00 sec)
+
+mysql> INSERT INTO orders (order_date, cust_id) VALUES
+    -> ('2025-08-20', 1),
+    -> ('2025-08-25', 1),
+    -> ('2025-08-30', 1);
+Query OK, 3 rows affected (0.08 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> select * from orders;
++----------+------------+---------+
+| order_id | order_date | cust_id |
++----------+------------+---------+
+|        1 | 2025-08-01 |       1 |
+|        2 | 2025-08-05 |       2 |
+|        3 | 2025-08-10 |       3 |
+|        4 | 2025-08-12 |       4 |
+|        5 | 2025-08-20 |       1 |
+|        6 | 2025-08-25 |       1 |
+|        7 | 2025-08-30 |       1 |
++----------+------------+---------+
+7 rows in set (0.00 sec)
+
+mysql> UPDATE product
+    -> SET unit_price = 160000.00
+    -> WHERE product_desc = 'Luxury Watch';
+Query OK, 1 row affected (0.05 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE orders
+    -> SET order_date = '2025-08-20'
+    -> WHERE order_id = 3;
+Query OK, 1 row affected (0.07 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT o.order_id, o.order_date, c.c_name
+    -> FROM orders o
+    -> JOIN customer c ON o.cust_id = c.cust_id
+    -> WHERE c.c_name = 'Ram';
++----------+------------+--------+
+| order_id | order_date | c_name |
++----------+------------+--------+
+|        1 | 2025-08-01 | Ram    |
+|        5 | 2025-08-20 | Ram    |
+|        6 | 2025-08-25 | Ram    |
+|        7 | 2025-08-30 | Ram    |
++----------+------------+--------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT product_id
+    -> FROM product
+    -> WHERE unit_price > 100000;
++------------+
+| product_id |
++------------+
+|          5 |
+|          6 |
+|          7 |
+|         10 |
++------------+
+4 rows in set (0.00 sec)
+
+mysql> INSERT INTO orders (order_date, cust_id) VALUES
+    -> ('2023-07-20', 1),
+    -> ('2023-07-20', 2);
+Query OK, 2 rows affected (0.08 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM orders
+    -> WHERE order_date = '2023-07-20';
++----------+------------+---------+
+| order_id | order_date | cust_id |
++----------+------------+---------+
+|        8 | 2023-07-20 |       1 |
+|        9 | 2023-07-20 |       2 |
++----------+------------+---------+
+2 rows in set (0.00 sec)
+
+mysql> DELETE FROM product WHERE product_id = 3;
+Query OK, 1 row affected (0.09 sec)
+
+mysql> notee;
+mysql> ALTER TABLE orders
+    -> DROP FOREIGN KEY orders_ibfk_1;
+Query OK, 0 rows affected (0.12 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE orders
+    -> ADD CONSTRAINT orders_fk_customer
+    ->     FOREIGN KEY (cust_id) 
+    ->     REFERENCES customer(cust_id)
+    ->     ON DELETE CASCADE
+    ->     ON UPDATE CASCADE;
+Query OK, 9 rows affected (1.85 sec)
+Records: 9  Duplicates: 0  Warnings: 0
+
