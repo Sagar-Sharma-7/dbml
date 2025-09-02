@@ -1,0 +1,260 @@
+> use sagar_ass9
+switched to db sagar_ass9
+> db.createCollection("student")
+{ "ok" : 1 }
+> show collections
+student
+> show dbs
+admin       0.000GB
+anurag      0.000GB
+bank        0.000GB
+base        0.000GB
+config      0.000GB
+employee    0.000GB
+fruits      0.000GB
+local       0.000GB
+mydatabase  0.000GB
+sagar_ass9  0.000GB
+student     0.000GB
+test        0.000GB
+testdb      0.000GB
+> db.student.insertMany([
+...   { name: "Ram", rollNo: 101, marks: 85, CGPA: 9.2, branch: "Computer Science", nativeCity: "Delhi" },
+...   { name: "Sita", rollNo: 102, marks: 88, CGPA: 8.6, branch: "IT", nativeCity: "Mumbai" },
+...   { name: "Shyam", rollNo: 103, marks: 75, CGPA: 7.9, branch: "Electrical", nativeCity: "Kolkata" },
+...   { name: "Ravi", rollNo: 104, marks: 90, CGPA: 9.5, branch: "Computer Science", nativeCity: "Bangalore" },
+...   { name: "Priya", rollNo: 105, marks: 80, CGPA: 8.2, branch: "Electronics", nativeCity: "Chennai" },
+...   { name: "Amit", rollNo: 106, marks: 95, CGPA: 9.8, branch: "Computer Science", nativeCity: "Delhi" },
+...   { name: "Geeta", rollNo: 107, marks: 78, CGPA: 8.0, branch: "Civil", nativeCity: "Hyderabad" }
+... ])
+{
+	"acknowledged" : true,
+	"insertedIds" : [
+		ObjectId("68b68f3350e207eedee6292a"),
+		ObjectId("68b68f3350e207eedee6292b"),
+		ObjectId("68b68f3350e207eedee6292c"),
+		ObjectId("68b68f3350e207eedee6292d"),
+		ObjectId("68b68f3350e207eedee6292e"),
+		ObjectId("68b68f3350e207eedee6292f"),
+		ObjectId("68b68f3350e207eedee62930")
+	]
+}
+> show collections
+student
+> db.sagar_ass9.find()
+> db.student.find()
+{ "_id" : ObjectId("68b68f3350e207eedee6292a"), "name" : "Ram", "rollNo" : 101, "marks" : 85, "CGPA" : 9.2, "branch" : "Computer Science", "nativeCity" : "Delhi" }
+{ "_id" : ObjectId("68b68f3350e207eedee6292b"), "name" : "Sita", "rollNo" : 102, "marks" : 88, "CGPA" : 8.6, "branch" : "IT", "nativeCity" : "Mumbai" }
+{ "_id" : ObjectId("68b68f3350e207eedee6292c"), "name" : "Shyam", "rollNo" : 103, "marks" : 75, "CGPA" : 7.9, "branch" : "Electrical", "nativeCity" : "Kolkata" }
+{ "_id" : ObjectId("68b68f3350e207eedee6292d"), "name" : "Ravi", "rollNo" : 104, "marks" : 90, "CGPA" : 9.5, "branch" : "Computer Science", "nativeCity" : "Bangalore" }
+{ "_id" : ObjectId("68b68f3350e207eedee6292e"), "name" : "Priya", "rollNo" : 105, "marks" : 80, "CGPA" : 8.2, "branch" : "Electronics", "nativeCity" : "Chennai" }
+{ "_id" : ObjectId("68b68f3350e207eedee6292f"), "name" : "Amit", "rollNo" : 106, "marks" : 95, "CGPA" : 9.8, "branch" : "Computer Science", "nativeCity" : "Delhi" }
+{ "_id" : ObjectId("68b68f3350e207eedee62930"), "name" : "Geeta", "rollNo" : 107, "marks" : 78, "CGPA" : 8, "branch" : "Civil", "nativeCity" : "Hyderabad" }
+> db.student.find().pretty()
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292a"),
+	"name" : "Ram",
+	"rollNo" : 101,
+	"marks" : 85,
+	"CGPA" : 9.2,
+	"branch" : "Computer Science",
+	"nativeCity" : "Delhi"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292b"),
+	"name" : "Sita",
+	"rollNo" : 102,
+	"marks" : 88,
+	"CGPA" : 8.6,
+	"branch" : "IT",
+	"nativeCity" : "Mumbai"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292c"),
+	"name" : "Shyam",
+	"rollNo" : 103,
+	"marks" : 75,
+	"CGPA" : 7.9,
+	"branch" : "Electrical",
+	"nativeCity" : "Kolkata"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292d"),
+	"name" : "Ravi",
+	"rollNo" : 104,
+	"marks" : 90,
+	"CGPA" : 9.5,
+	"branch" : "Computer Science",
+	"nativeCity" : "Bangalore"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292e"),
+	"name" : "Priya",
+	"rollNo" : 105,
+	"marks" : 80,
+	"CGPA" : 8.2,
+	"branch" : "Electronics",
+	"nativeCity" : "Chennai"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292f"),
+	"name" : "Amit",
+	"rollNo" : 106,
+	"marks" : 95,
+	"CGPA" : 9.8,
+	"branch" : "Computer Science",
+	"nativeCity" : "Delhi"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee62930"),
+	"name" : "Geeta",
+	"rollNo" : 107,
+	"marks" : 78,
+	"CGPA" : 8,
+	"branch" : "Civil",
+	"nativeCity" : "Hyderabad"
+}
+> db.student.updateOne(
+...   { name: "Ram" },
+...   { $set: { marks: 90 } }
+... )
+{ "acknowledged" : true, "matchedCount" : 1, "modifiedCount" : 1 }
+> db.student.find({ $or: [{ CGPA: { $gte: 9 } }, { branch: "Computer Science" }] }).pretty()
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292a"),
+	"name" : "Ram",
+	"rollNo" : 101,
+	"marks" : 90,
+	"CGPA" : 9.2,
+	"branch" : "Computer Science",
+	"nativeCity" : "Delhi"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292d"),
+	"name" : "Ravi",
+	"rollNo" : 104,
+	"marks" : 90,
+	"CGPA" : 9.5,
+	"branch" : "Computer Science",
+	"nativeCity" : "Bangalore"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292f"),
+	"name" : "Amit",
+	"rollNo" : 106,
+	"marks" : 95,
+	"CGPA" : 9.8,
+	"branch" : "Computer Science",
+	"nativeCity" : "Delhi"
+}
+> db.student.find({ branch: { $ne: "IT" } }).pretty()
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292a"),
+	"name" : "Ram",
+	"rollNo" : 101,
+	"marks" : 90,
+	"CGPA" : 9.2,
+	"branch" : "Computer Science",
+	"nativeCity" : "Delhi"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292c"),
+	"name" : "Shyam",
+	"rollNo" : 103,
+	"marks" : 75,
+	"CGPA" : 7.9,
+	"branch" : "Electrical",
+	"nativeCity" : "Kolkata"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292d"),
+	"name" : "Ravi",
+	"rollNo" : 104,
+	"marks" : 90,
+	"CGPA" : 9.5,
+	"branch" : "Computer Science",
+	"nativeCity" : "Bangalore"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292e"),
+	"name" : "Priya",
+	"rollNo" : 105,
+	"marks" : 80,
+	"CGPA" : 8.2,
+	"branch" : "Electronics",
+	"nativeCity" : "Chennai"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292f"),
+	"name" : "Amit",
+	"rollNo" : 106,
+	"marks" : 95,
+	"CGPA" : 9.8,
+	"branch" : "Computer Science",
+	"nativeCity" : "Delhi"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee62930"),
+	"name" : "Geeta",
+	"rollNo" : 107,
+	"marks" : 78,
+	"CGPA" : 8,
+	"branch" : "Civil",
+	"nativeCity" : "Hyderabad"
+}
+> db.student.find({ CGPA: 7, nativeCity: "Mumbai" }).pretty()
+> db.student.find({
+...   $nor: [{ CGPA: { $eq: 9 } }, { branch: "Computer Science" }]
+... }).pretty()
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292b"),
+	"name" : "Sita",
+	"rollNo" : 102,
+	"marks" : 88,
+	"CGPA" : 8.6,
+	"branch" : "IT",
+	"nativeCity" : "Mumbai"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292c"),
+	"name" : "Shyam",
+	"rollNo" : 103,
+	"marks" : 75,
+	"CGPA" : 7.9,
+	"branch" : "Electrical",
+	"nativeCity" : "Kolkata"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292e"),
+	"name" : "Priya",
+	"rollNo" : 105,
+	"marks" : 80,
+	"CGPA" : 8.2,
+	"branch" : "Electronics",
+	"nativeCity" : "Chennai"
+}
+{
+	"_id" : ObjectId("68b68f3350e207eedee62930"),
+	"name" : "Geeta",
+	"rollNo" : 107,
+	"marks" : 78,
+	"CGPA" : 8,
+	"branch" : "Civil",
+	"nativeCity" : "Hyderabad"
+}
+> db.student.save({ name: "Nisha", rollNo: 108, marks: 88, CGPA: 8.1, branch: "Computer Science", nativeCity: "Mumbai" })
+WriteResult({ "nInserted" : 1 })
+> db.student.deleteOne({ name: "Sita" })
+{ "acknowledged" : true, "deletedCount" : 1 }
+> db.student.find({ branch: "Computer Science" }).sort({ CGPA: -1 }).limit(1).pretty()
+{
+	"_id" : ObjectId("68b68f3350e207eedee6292f"),
+	"name" : "Amit",
+	"rollNo" : 106,
+	"marks" : 95,
+	"CGPA" : 9.8,
+	"branch" : "Computer Science",
+	"nativeCity" : "Delhi"
+}
+> 
+
