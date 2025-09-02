@@ -1,0 +1,67 @@
+mysql> create table library (
+    ->     library_id int auto_increment primary key,
+    ->     title varchar(255) not null
+    -> );
+Query OK, 0 rows affected (0.49 sec)
+
+mysql> create table library_audit (
+    ->     audit_id int auto_increment primary key,
+    ->     action_type enum('update', 'delete') not null,
+    ->     library_id int not null,
+    ->     old_title varchar(255),
+    ->     action_time timestamp default current_timestamp
+    -> );
+Query OK, 0 rows affected (0.84 sec)
+
+mysql> delimiter //
+mysql> 
+mysql> create trigger before_library_update
+    -> before update on library
+    -> for each row
+    -> begin
+    ->     -- insert the old title value into the library_audit table
+    ->     insert into library_audit (action_type, library_id, old_title)
+    ->     values ('update', old.library_id, old.title);
+    -> end //
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> 
+mysql> delimiter ;
+mysql> delimiter //
+mysql> 
+mysql> create trigger before_library_delete
+    -> before delete on library
+    -> for each row
+    -> begin
+    ->     -- insert the old title value into the library_audit table
+    ->     insert into library_audit (action_type, library_id, old_title)
+    ->     values ('delete', old.library_id, old.title);
+    -> end //
+Query OK, 0 rows affected (0.15 sec)
+
+mysql> 
+mysql> delimiter ;
+mysql> insert into library (title)
+    -> values ('to kill a mockingbird');
+Query OK, 1 row affected (0.06 sec)
+
+mysql> update library
+    -> set title = '1984'
+    -> where title = 'to kill a mockingbird';
+Query OK, 1 row affected (0.07 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> delete from library
+    -> where title = '1984';
+Query OK, 1 row affected (0.10 sec)
+
+mysql> select * from library_audit;
++----------+-------------+------------+-----------------------+---------------------+
+| audit_id | action_type | library_id | old_title             | action_time         |
++----------+-------------+------------+-----------------------+---------------------+
+|        1 | update      |          1 | to kill a mockingbird | 2025-09-02 11:23:19 |
+|        2 | delete      |          1 | 1984                  | 2025-09-02 11:23:24 |
++----------+-------------+------------+-----------------------+---------------------+
+2 rows in set (0.00 sec)
+
+mysql> notee;
