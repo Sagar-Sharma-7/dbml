@@ -1,0 +1,59 @@
+> use sagar_ass10
+switched to db sagar_ass10
+> db.students.insertMany([
+...   { _id: 1, name: "Amit", age: 15, marks: 85, city: "Delhi" },
+...   { _id: 2, name: "Priya", age: 14, marks: 90, city: "Mumbai" },
+...   { _id: 3, name: "Ravi", age: 16, marks: 78, city: "Kolkata" },
+...   { _id: 4, name: "Simran", age: 17, marks: 88, city: "Bangalore" }
+... ])
+{ "acknowledged" : true, "insertedIds" : [ 1, 2, 3, 4 ] }
+> db.students.aggregate([
+...   {
+...     $group: {
+...       _id: null, // We don't need to group by any field
+...       averageMarks: { $avg: "$marks" }
+...     }
+...   }
+... ])
+{ "_id" : null, "averageMarks" : 85.25 }
+> db.students.aggregate([
+...   {
+...     $group: {
+...       _id: "$city", // Group by 'city'
+...       totalStudents: { $sum: 1 } // Count the total number of students in each city
+...     }
+...   }
+... ])
+{ "_id" : "Bangalore", "totalStudents" : 1 }
+{ "_id" : "Kolkata", "totalStudents" : 1 }
+{ "_id" : "Mumbai", "totalStudents" : 1 }
+{ "_id" : "Delhi", "totalStudents" : 1 }
+> db.students.aggregate([
+...   { $sort: { marks: -1 } } // Sort by marks in descending order
+... ])
+{ "_id" : 2, "name" : "Priya", "age" : 14, "marks" : 90, "city" : "Mumbai" }
+{ "_id" : 4, "name" : "Simran", "age" : 17, "marks" : 88, "city" : "Bangalore" }
+{ "_id" : 1, "name" : "Amit", "age" : 15, "marks" : 85, "city" : "Delhi" }
+{ "_id" : 3, "name" : "Ravi", "age" : 16, "marks" : 78, "city" : "Kolkata" }
+> db.students.createIndex({ city: 1 })
+{
+	"createdCollectionAutomatically" : false,
+	"numIndexesBefore" : 1,
+	"numIndexesAfter" : 2,
+	"ok" : 1
+}
+> db.students.find({ city: "Delhi" })
+{ "_id" : 1, "name" : "Amit", "age" : 15, "marks" : 85, "city" : "Delhi" }
+> db.students.aggregate([
+...   { $match: { city: { $in: ["Delhi", "Mumbai"] } } }, // Filter students from Delhi or Mumbai
+...   {
+...     $group: {
+...       _id: "$city", // Group by city
+...       averageMarks: { $avg: "$marks" } // Calculate average marks per city
+...     }
+...   }
+... ])
+{ "_id" : "Mumbai", "averageMarks" : 90 }
+{ "_id" : "Delhi", "averageMarks" : 85 }
+> 
+
