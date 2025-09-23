@@ -1,0 +1,77 @@
+> use sagar_11
+switched to db sagar_11
+> db.students.insertMany([
+...   { _id: 1, name: "Amit", age: 15, marks: 85, city: "Delhi" },
+...   { _id: 2, name: "Priya", age: 14, marks: 90, city: "Mumbai" },
+...   { _id: 3, name: "Ravi", age: 16, marks: 78, city: "Kolkata" },
+...   { _id: 4, name: "Simran", age: 17, marks: 88, city: "Bangalore" }
+... ])
+{ "acknowledged" : true, "insertedIds" : [ 1, 2, 3, 4 ] }
+> var mapFunction = function() {
+...   emit(this.city, this.marks);  // Emit city as the key and marks as the value
+... };
+> var reduceFunction = function(key, values) {
+...   return Array.sum(values);  // Sum the marks for each city
+... };
+> db.students.mapReduce(
+...   mapFunction,
+...   reduceFunction,
+...   {
+...     out: "total_marks_by_city"  // Store the result in this collection
+...   }
+... )
+{
+	"result" : "total_marks_by_city",
+	"timeMillis" : 424,
+	"counts" : {
+		"input" : 4,
+		"emit" : 4,
+		"reduce" : 0,
+		"output" : 4
+	},
+	"ok" : 1
+}
+> db.total_marks_by_city.find()
+{ "_id" : "Bangalore", "value" : 88 }
+{ "_id" : "Delhi", "value" : 85 }
+{ "_id" : "Kolkata", "value" : 78 }
+{ "_id" : "Mumbai", "value" : 90 }
+> { "_id": "Delhi", "value": 85 }
+2025-09-23T12:09:16.486+0530 E QUERY    [thread1] SyntaxError: missing ; before statement @(shell):1:7
+> { "_id": "Mumbai", "value": 90 }
+2025-09-23T12:09:16.487+0530 E QUERY    [thread1] SyntaxError: missing ; before statement @(shell):1:7
+> { "_id": "Kolkata", "value": 78 }
+2025-09-23T12:09:16.487+0530 E QUERY    [thread1] SyntaxError: missing ; before statement @(shell):1:7
+> { "_id": "Bangalore", "value": 88 }
+2025-09-23T12:09:16.488+0530 E QUERY    [thread1] SyntaxError: missing ; before statement @(shell):1:7
+> var finalizeFunction = function(key, value) {
+...   return value;  // You can manipulate the value here if needed
+... };
+> 
+> db.students.mapReduce(
+...   mapFunction,
+...   reduceFunction,
+...   {
+...     out: "total_marks_by_city",
+...     finalize: finalizeFunction  // Apply the finalizer to the result
+...   }
+... )
+{
+	"result" : "total_marks_by_city",
+	"timeMillis" : 330,
+	"counts" : {
+		"input" : 4,
+		"emit" : 4,
+		"reduce" : 0,
+		"output" : 4
+	},
+	"ok" : 1
+}
+> db.total_marks_by_city.find()
+{ "_id" : "Bangalore", "value" : 88 }
+{ "_id" : "Delhi", "value" : 85 }
+{ "_id" : "Kolkata", "value" : 78 }
+{ "_id" : "Mumbai", "value" : 90 }
+> 
+
+
