@@ -1,0 +1,9 @@
+pip install mysql-connector-python
+
+// add the bottom command in mysql
+create database dummy;
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE
+);
