@@ -1,0 +1,89 @@
+CREATE TABLE Borrower (
+    Rollno       INT PRIMARY KEY,
+    Name         VARCHAR(100),
+    DateofIssue  DATE,
+    NameofBook   VARCHAR(200),
+    Status       CHAR(1)   
+);
+
+CREATE TABLE Fine (
+    Roll_no INT,
+    Date DATE,
+    Amt DECIMAL(10,2),
+    FOREIGN KEY (Roll_no) REFERENCES Borrower(Rollno)
+);
+
+DELIMITER //
+
+CREATE PROCEDURE return_book (
+    IN p_rollno INT,
+    IN p_bookname VARCHAR(200)
+)
+BEGIN
+    DECLARE v_date_of_issue DATE;
+    DECLARE v_days INT;
+    DECLARE v_fine DECIMAL(10,2) DEFAULT 0;
+    DECLARE v_status CHAR(1);
+
+    /* System-defined exception handler */
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        SELECT 'System Error: Please check inputs or try again.' AS Error;
+    END;
+
+    /* Fetch issued book details */
+    SELECT DateofIssue, Status
+    INTO v_date_of_issue, v_status
+    FROM Borrower
+    WHERE Rollno = p_rollno AND NameofBook = p_bookname;
+
+    /* User-defined exception */
+    IF v_status = 'R' THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'User Error: Book has already been returned';
+    END IF;
+
+    /* Calculate fine */
+    SET v_days = DATEDIFF(CURDATE(), v_date_of_issue);
+
+    IF v_days > 30 THEN
+        SET v_fine = (v_days - 30) * 50 + (15 * 5);
+    ELSEIF v_days > 15 THEN
+        SET v_fine = (v_days - 15) * 5;
+    END IF;
+
+    /* Update status to Returned */
+    UPDATE Borrower
+    SET Status = 'R'
+    WHERE Rollno = p_rollno AND NameofBook = p_bookname;
+
+    /* Insert into fine table if applicable */
+    IF v_fine > 0 THEN
+        INSERT INTO Fine (Roll_no, Date, Amt)
+        VALUES (p_rollno, CURDATE(), v_fine);
+    END IF;
+
+    /* Successful Output */
+    SELECT 'Book returned successfully' AS Message,
+           v_days AS Days_Borrowed,
+           v_fine AS Fine;
+END;
+//
+
+DELIMITER ;
+
+
+INSERT INTO Borrower (Rollno, Name, DateofIssue, NameofBook, Status) VALUES
+(102, 'Priya', '2025-06-10', 'Operating Systems', 'I'),
+(103, 'Ravi', '2025-07-10', 'Computer Networks', 'I'),
+(104, 'Neha', '2025-06-01', 'Java Programming', 'I'),
+(105, 'Arjun', '2025-07-01', 'Data Structures', 'I'),
+(106, 'Sneha', '2025-07-20', 'Machine Learning', 'I'),
+(107, 'Rahul', '2025-06-15', 'Cloud Computing', 'R');
+
+INSERT INTO Fine (Roll_no, Date, Amt)
+VALUES (107, '2025-07-10', 325.00);
+
+
+CALL return_book(102, 'Operating Systems');
+CALL return_book(107, 'Cloud Computing');

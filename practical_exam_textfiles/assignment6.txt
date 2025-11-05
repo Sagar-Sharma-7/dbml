@@ -1,0 +1,185 @@
+CREATE TABLE N_RollCall (
+    RollNo INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Branch VARCHAR(50),
+    Year INT,
+    Attendance_Percentage INT,
+    Event VARCHAR(50)
+);
+
+CREATE TABLE O_RollCall (
+    RollNo INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Branch VARCHAR(50),
+    Year INT,
+    Attendance_Percentage INT,
+    Event VARCHAR(50)
+);
+
+
+INSERT INTO N_RollCall VALUES
+(1,'Amit','Computer',2,50,'Cultural'),
+(2,'Neha','IT',1,65,'Sports'),
+(3,'Ravi','Computer',3,72,'Cultural'),
+(4,'Karan','Mechanical',2,40,'Cultural'),
+(5,'Sneha','Computer',1,90,'Seminar');
+
+INSERT INTO O_RollCall VALUES
+(1,'Amit','Computer',2,70,'Seminar'),
+(6,'Priya','IT',3,85,'Cultural'),
+(7,'Rahul','Civil',2,55,'Sports');
+
+
+DELIMITER //
+
+CREATE PROCEDURE Increase_Cultural_Attendance()
+BEGIN
+    DECLARE rows_updated INT DEFAULT 0;
+
+    UPDATE N_RollCall
+    SET Attendance_Percentage = Attendance_Percentage + 20
+    WHERE Event = 'Cultural';
+
+    SET rows_updated = ROW_COUNT();
+
+    SELECT CONCAT('Total Rows Updated: ', rows_updated) AS Result;
+END //
+
+DELIMITER ;
+
+CALL Increase_Cultural_Attendance();
+
+DELIMITER //
+
+CREATE PROCEDURE Show_Computer_Students()
+BEGIN
+    DECLARE v_roll INT;
+    DECLARE v_name VARCHAR(100);
+    DECLARE v_branch VARCHAR(50);
+    DECLARE v_year INT;
+    DECLARE v_attendance INT;
+    DECLARE v_event VARCHAR(50);
+
+    DECLARE finished INT DEFAULT 0;
+
+    DECLARE comp_cursor CURSOR FOR
+        SELECT RollNo, Name, Branch, Year, Attendance_Percentage, Event
+        FROM N_RollCall
+        WHERE Branch = 'Computer';
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+        SET finished = 1;
+
+    OPEN comp_cursor;
+
+    read_loop: LOOP
+        FETCH comp_cursor INTO v_roll, v_name, v_branch, v_year, v_attendance, v_event;
+
+        IF finished = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        SELECT v_roll AS RollNo, v_name AS Name, v_branch AS Branch,
+               v_year AS Year, v_attendance AS Attendance, v_event AS Event;
+    END LOOP;
+
+    CLOSE comp_cursor;
+END //
+
+DELIMITER ;
+DELIMITER //
+
+CREATE PROCEDURE Show_High_Attendance()
+BEGIN
+    DECLARE v_roll INT;
+    DECLARE v_name VARCHAR(100);
+    DECLARE v_branch VARCHAR(50);
+    DECLARE v_year INT;
+    DECLARE v_attendance INT;
+    DECLARE v_event VARCHAR(50);
+
+    DECLARE finished INT DEFAULT 0;
+    DECLARE high_cursor CURSOR FOR
+        SELECT RollNo, Name, Branch, Year, Attendance_Percentage, Event
+        FROM N_RollCall
+        WHERE Attendance_Percentage > 60;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+        SET finished = 1;
+
+    DROP TEMPORARY TABLE IF EXISTS temp_high_attendance;
+    CREATE TEMPORARY TABLE temp_high_attendance (
+        RollNo INT,
+        Name VARCHAR(100),
+        Branch VARCHAR(50),
+        Year INT,
+        Attendance INT,
+        Event VARCHAR(50)
+    );
+
+   
+
+    OPEN high_cursor;
+
+    read_loop: LOOP
+        FETCH high_cursor INTO v_roll, v_name, v_branch, v_year, v_attendance, v_event;
+
+        IF finished = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        INSERT INTO temp_high_attendance
+        VALUES (v_roll, v_name, v_branch, v_year, v_attendance, v_event);
+    END LOOP;
+
+    CLOSE high_cursor;
+
+    SELECT * FROM temp_high_attendance;
+END //
+
+DELIMITER ;
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE Merge_O_to_N()
+BEGIN
+    DECLARE v_roll INT;
+    DECLARE v_name VARCHAR(100);
+    DECLARE v_branch VARCHAR(50);
+    DECLARE v_year INT;
+    DECLARE v_attendance INT;
+    DECLARE v_event VARCHAR(50);
+    DECLARE finished INT DEFAULT 0;
+
+    DECLARE merge_cursor CURSOR FOR
+        SELECT RollNo, Name, Branch, Year, Attendance_Percentage, Event
+        FROM O_RollCall;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+        SET finished = 1;
+
+    OPEN merge_cursor;
+
+    read_loop: LOOP
+        FETCH merge_cursor INTO v_roll, v_name, v_branch, v_year, v_attendance, v_event;
+
+        IF finished = 1 THEN
+            LEAVE read_loop;
+        END IF;
+
+        IF NOT EXISTS (SELECT 1 FROM N_RollCall WHERE RollNo = v_roll) THEN
+            INSERT INTO N_RollCall VALUES (v_roll, v_name, v_branch, v_year, v_attendance, v_event);
+        END IF;
+
+    END LOOP;
+
+    CLOSE merge_cursor;
+
+END //
+
+DELIMITER ;
+
+CALL Merge_O_to_N();
+

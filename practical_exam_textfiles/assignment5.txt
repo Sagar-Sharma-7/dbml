@@ -1,0 +1,154 @@
+CREATE TABLE Stud_Marks (
+    name VARCHAR(100),
+    total_marks INT
+);
+
+CREATE TABLE Result (
+    Roll INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100),
+    Class VARCHAR(50)
+);
+
+DELIMITER //
+
+CREATE FUNCTION Grade_Categorization (marks INT) 
+RETURNS VARCHAR(50)
+DETERMINISTIC
+BEGIN
+    DECLARE grade VARCHAR(50);
+    
+    -- User-defined exception for invalid marks
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid Marks Value';
+    
+    -- Check for valid marks range
+    IF marks < 0 OR marks > 1500 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Marks must be between 0 and 1500';
+    END IF;
+    
+    -- Categorize the grade based on marks
+    IF marks >= 990 AND marks <= 1500 THEN
+        SET grade = 'Distinction';
+    ELSEIF marks >= 900 AND marks <= 989 THEN
+        SET grade = 'First Class';
+    ELSEIF marks >= 825 AND marks <= 899 THEN
+        SET grade = 'Higher Second Class';
+    ELSE
+        SET grade = 'Not Categorized';
+    END IF;
+
+    RETURN grade;
+END //
+
+DELIMITER ;
+DELIMITER //
+
+CREATE PROCEDURE proc_Grade()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE v_name VARCHAR(100);
+    DECLARE v_total_marks INT;
+    DECLARE v_grade VARCHAR(50);
+    
+    -- Declare the cursor first (before the handler)
+    DECLARE student_cursor CURSOR FOR 
+        SELECT name, total_marks FROM Stud_Marks;
+    
+    -- Declare the CONTINUE handler for NOT FOUND (before the cursor)
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    -- Declare the CONTINUE handler for SQL exceptions (before the cursor)
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error occurred during procedure execution';
+
+    -- Open the cursor to read student data
+    OPEN student_cursor;
+
+    -- Loop to process each student's data
+    read_loop: LOOP
+        FETCH student_cursor INTO v_name, v_total_marks;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        
+        -- Call the function to get the student's grade based on marks
+        BEGIN
+            -- Using exception handling inside the procedure
+            DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+                SET v_grade = 'Error in Grade Categorization';
+            SET v_grade = Grade_Categorization(v_total_marks);
+        END;
+        
+        -- Insert the result into the Result table
+        INSERT INTO Result (Name, Class) VALUES (v_name, v_grade);
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE student_cursor;
+
+    -- Commit the transaction
+    COMMIT;
+END //
+
+DELIMITER ;
+
+INSERT INTO Stud_Marks (name, total_marks) 
+VALUES 
+    ('Aarav', 1200),
+    ('Isha', 950),
+    ('Ravi', 880),
+    ('Priya', 800);
+
+CALL proc_Grade();
+
+SELECT * FROM Result;
+
+create table library (
+    library_id int auto_increment primary key,
+    title varchar(255) not null
+);
+
+create table library_audit (
+    audit_id int auto_increment primary key,
+    action_type enum('update', 'delete') not null,
+    library_id int not null,
+    old_title varchar(255),
+    action_time timestamp default current_timestamp
+);
+
+delimiter //
+
+create trigger before_library_update
+before update on library
+for each row
+begin
+    -- insert the old title value into the library_audit table
+    insert into library_audit (action_type, library_id, old_title)
+    values ('update', old.library_id, old.title);
+end //
+
+delimiter ;
+delimiter //
+
+create trigger before_library_delete
+before delete on library
+for each row
+begin
+    -- insert the old title value into the library_audit table
+    insert into library_audit (action_type, library_id, old_title)
+    values ('delete', old.library_id, old.title);
+end //
+
+delimiter ;
+
+insert into library (title)
+values ('to kill a mockingbird');
+
+update library
+set title = '1984'
+where title = 'to kill aL a mockingbird';
+
+delete from library
+where title = '1984';
+
+select * from library_audit;
