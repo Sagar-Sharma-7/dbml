@@ -1,0 +1,145 @@
+create table employee (
+e_id int primary key auto_increment,
+name varchar(100),
+street varchar(100),
+city varchar(100)
+);
+
+create table company (
+company_name varchar(100) primary key,
+city varchar(100)
+);
+
+create table works (
+e_id int,
+company_name varchar(100),
+salary int,
+primary key (e_id, company_name),
+foreign key (e_id) references employee(e_id) on delete cascade,
+foreign key (company_name) references company(company_name) on delete cascade
+);
+
+create table manages (
+e_id int,
+dept_name varchar(100),
+primary key (e_id, dept_name),
+foreign key (e_id) references employee(e_id) on delete cascade
+);
+
+--- insert data ---
+
+insert into employee (name, street, city) values
+('Amit Kumar', 'MG Road', 'Pune'),
+('Neha Sharma', 'Link Road', 'Mumbai'),
+('Ravi Verma', 'FC Road', 'Pune'),
+('Karan Singh', 'Main St', 'Delhi'),
+('Sneha Patil', 'LBS Marg', 'Mumbai'),
+('Vijay Rao', 'JM Road', 'Pune'),
+('Priya Jain', 'Baner Road', 'Pune');
+
+insert into company (company_name, city) values
+('ABC Corp', 'Pune'),
+('Amazon', 'Mumbai'),
+('Google', 'Mumbai'),
+('TCS', 'Delhi'),
+('Empty Corp', 'Delhi');
+
+insert into works (e_id, company_name, salary) values
+(1, 'ABC Corp', 60000),
+(1, 'Amazon', 140000),
+(2, 'Google', 120000),
+(3, 'ABC Corp', 45000),
+(4, 'TCS', 55000),
+(5, 'Amazon', 80000),
+(6, 'ABC Corp', 30000),
+(7, 'Google', 130000);
+
+insert into manages (e_id, dept_name) values
+(1, 'HR'),
+(5, 'Tech');
+
+--- subquery 1. find employee details working in 'abc corp' and 'amazon'. ---
+
+select * from employee
+where e_id in (
+select e_id from works where company_name = 'ABC Corp'
+)
+and e_id in (
+select e_id from works where company_name = 'Amazon'
+);
+
+--- subquery 2. list of all employees details who are managers. ---
+
+select * from employee
+where e_id in (
+select e_id from manages
+);
+
+--- subquery 3. give count of employees working in each company. ---
+
+select company_name, (
+select count(e_id)
+from works w
+where w.company_name = c.company_name
+) as employee_count
+from company c;
+
+--- subquery 4. find all employees having salary greater than average salary of employees from 'google'. ---
+
+select * from employee
+where e_id in (
+select e_id from works
+where salary > (
+select avg(salary) from works where company_name = 'Google'
+)
+);
+
+--- subquery 5. find employee names who are managing companies from 'mumbai' city. ---
+
+select name from employee
+where e_id in (select e_id from manages)
+and e_id in (
+select e_id from works where company_name in (
+select company_name from company where city = 'Mumbai'
+)
+);
+
+--- join 6. list of all employees details who are managers. (natural join) ---
+
+select e.*
+from employee e
+natural join manages m;
+
+--- join 7. find all possible combination of managers and departments (cross join) ---
+
+select m.e_id, d.dept_name
+from (select distinct e_id from manages) as m
+cross join (select distinct dept_name from manages) as d;
+
+--- join 8. list of all employees details who are not managers. (left outer join) ---
+
+select e.*
+from employee e
+left outer join manages m on e.e_id = m.e_id
+where m.e_id is null;
+
+--- join 9. fecth employee and company details (with null company). (right outer join) ---
+
+select e.name, c.company_name, c.city
+from employee e
+join works w on e.e_id = w.e_id
+right outer join company c on w.company_name = c.company_name;
+
+--- join 10. give details of all employees working in 'delhi' and 'mumbai'. (emulate full outer join using union) ---
+
+select e.*
+from employee e
+join works w on e.e_id = w.e_id
+join company c on w.company_name = c.company_name
+where c.city = 'Delhi'
+union
+select e.*
+from employee e
+join works w on e.e_id = w.e_id
+join company c on w.company_name = c.company_name
+where c.city = 'Mumbai';
