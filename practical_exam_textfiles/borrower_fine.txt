@@ -1,0 +1,88 @@
+create table Borrower (
+Rollno int primary key,
+Name varchar(100),
+DateofIssue date,
+NameofBook varchar(200),
+Status char(1)
+);
+
+create table Fine (
+Roll_no int,
+Date date,
+Amt decimal(10,2),
+foreign key (Roll_no) references Borrower(Rollno)
+);
+
+delimiter //
+
+create procedure return_book (
+in p_rollno int,
+in p_bookname varchar(200)
+)
+begin
+declare v_date_of_issue date;
+declare v_days int;
+declare v_fine decimal(10,2) default 0;
+declare v_status char(1);
+
+/* System-defined exception handler */
+declare exit handler for sqlexception
+begin
+select 'System Error: Please check inputs or try again.' as Error;
+end;
+
+/* Fetch issued book details */
+select DateofIssue, Status
+into v_date_of_issue, v_status
+from Borrower
+where Rollno = p_rollno and NameofBook = p_bookname;
+
+/* User-defined exception */
+if v_status = 'R' then
+signal sqlstate '45000'
+set message_text = 'User Error: Book has already been returned';
+end if;
+
+/* Calculate fine */
+set v_days = datediff(curdate(), v_date_of_issue);
+
+if v_days > 30 then
+set v_fine = (v_days - 30) * 50 + (15 * 5);
+elseif v_days > 15 then
+set v_fine = (v_days - 15) * 5;
+end if;
+
+/* Update status to Returned */
+update Borrower
+set Status = 'R'
+where Rollno = p_rollno and NameofBook = p_bookname;
+
+/* Insert into fine table if applicable */
+if v_fine > 0 then
+insert into Fine (Roll_no, Date, Amt)
+values (p_rollno, curdate(), v_fine);
+end if;
+
+/* Successful Output */
+select 'Book returned successfully' as Message,
+v_days as Days_Borrowed,
+v_fine as Fine;
+end;
+//
+
+delimiter ;
+
+insert into Borrower (Rollno, Name, DateofIssue, NameofBook, Status) values
+(102, 'Priya', '2025-06-10', 'Operating Systems', 'I'),
+(103, 'Ravi', '2025-07-10', 'Computer Networks', 'I'),
+(104, 'Neha', '2025-06-01', 'Java Programming', 'I'),
+(105, 'Arjun', '2025-07-01', 'Data Structures', 'I'),
+(106, 'Sneha', '2025-07-20', 'Machine Learning', 'I'),
+(107, 'Rahul', '2025-06-15', 'Cloud Computing', 'R');
+
+insert into Fine (Roll_no, Date, Amt)
+values (107, '2025-07-10', 325.00);
+
+call return_book(102, 'Operating Systems');
+
+call return_book(107, 'Cloud Computing');
