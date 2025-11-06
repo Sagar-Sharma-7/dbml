@@ -1,0 +1,24 @@
+db.job_applications.insertMany([
+{ name: "amit", state: "maharashtra", eligible: true, role: "developer" },
+{ name: "neha", state: "gujarat", eligible: false, role: "designer" },
+{ name: "ravi", state: "maharashtra", eligible: true, role: "developer" },
+{ name: "priya", state: "rajasthan", eligible: true, role: "manager" },
+{ name: "karan", state: "gujarat", eligible: true, role: "developer" },
+{ name: "sneha", state: "maharashtra", eligible: true, role: "designer" }
+]);
+
+var mapfn = function() {
+emit(this.state, 1);
+};
+
+var reducefn = function(key, values) {
+return Array.sum(values);
+};
+
+db.job_applications.mapReduce(
+mapfn,
+reducefn,
+{ out: "state_totals" }
+);
+
+db.state_totals.find();
