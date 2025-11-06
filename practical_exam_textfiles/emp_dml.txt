@@ -1,0 +1,175 @@
+create table employee (
+e_id int primary key auto_increment,
+name varchar(100),
+street varchar(100),
+city varchar(100)
+);
+
+create table company (
+company_name varchar(100) primary key,
+city varchar(100)
+);
+
+create table works (
+e_id int,
+company_name varchar(100),
+salary int,
+primary key (e_id, company_name),
+foreign key (e_id) references employee(e_id) on delete cascade,
+foreign key (company_name) references company(company_name) on delete cascade
+);
+
+create table manages (
+e_id int,
+dept_name varchar(100),
+primary key (e_id, dept_name),
+foreign key (e_id) references employee(e_id) on delete cascade
+);
+
+--- 1. insert values into above created tables ---
+
+insert into employee (name, street, city) values
+('Amit Kumar', 'MG Road', 'Pune'),
+('Neha Sharma', 'Link Road', 'Mumbai'),
+('Ravi Verma', 'FC Road', 'Pune'),
+('Karan Singh', 'Main St', 'Delhi'),
+('Sneha Patil', 'LBS Marg', 'Mumbai'),
+('Vijay Rao', 'JM Road', 'Pune'),
+('Priya Jain', 'Baner Road', 'Pune');
+
+insert into company (company_name, city) values
+('Amazon', 'Pune'),
+('Google', 'Mumbai'),
+('Flipkart', 'Mumbai'),
+('ABC Corp', 'Pune'),
+('TCS', 'Delhi');
+
+insert into works (e_id, company_name, salary) values
+(1, 'Amazon', 60000),
+(2, 'Google', 120000),
+(3, 'Flipkart', 70000),
+(4, 'TCS', 55000),
+(5, 'Amazon', 80000),
+(6, 'ABC Corp', 30000),
+(7, 'Google', 130000);
+
+insert into manages (e_id, dept_name) values
+(1, 'HR'),
+(5, 'Tech');
+
+--- 2. insert values into only selected columns ---
+
+insert into employee (street, city) values ('New Street', 'Bangalore');
+
+--- 3. select all values from employee and company tables. ---
+
+select * from employee;
+
+select * from company;
+
+--- 4. select employee id and name from employee table. ---
+
+select e_id, name from employee;
+
+--- 5. select names of all employees who are managing departments. ---
+
+select e.name
+from employee e
+where e.e_id in (select e_id from manages);
+
+--- 6. select list of all distinct cities from company table. ---
+
+select distinct city from company;
+
+--- 7. update the address(street, city) of employee whose e_id is '1'. ---
+
+update employee
+set street = 'New MG Road', city = 'Pune-West'
+where e_id = 1;
+
+--- 8. update (increase) the salary of employees working in 'amazon' by 10000 rs. ---
+
+update works
+set salary = salary + 10000
+where company_name = 'Amazon';
+
+--- 9. delete records of all employees having salary between 20000 rs and 50000 rs. ---
+
+delete from works
+where salary between 20000 and 50000;
+
+--- 10. select all company names where city name starts with 'p'. ---
+
+select company_name from company where city like 'P%';
+
+--- 11. list all employees from ('amazon', 'flipkart', 'google') companies. ---
+
+select e.*
+from employee e
+join works w on e.e_id = w.e_id
+where w.company_name in ('Amazon', 'Flipkart', 'Google');
+
+--- 12. what is the average salary of employees working in 'abc corp'. ---
+
+select avg(salary) as average_salary
+from works
+where company_name = 'ABC Corp';
+
+--- 13. find total number of employees working in 'amazon'. ---
+
+select count(e_id) as total_employees
+from works
+where company_name = 'Amazon';
+
+--- 14. find maximum and minimum salary of employee in 'google'. ---
+
+select max(salary) as max_salary, min(salary) as min_salary
+from works
+where company_name = 'Google';
+
+--- 15. find total amount spent on salaries of employee of 'abc corp'. ---
+
+select sum(salary) as total_salary_spent
+from works
+where company_name = 'ABC Corp';
+
+--- 16. list all details of company, sorted ascending by company name and descending by city. ---
+
+select * from company
+order by company_name asc, city desc;
+
+--- 17. list all employee names from 'amazon' and 'google' using union. ---
+
+select e.name
+from employee e
+join works w on e.e_id = w.e_id
+where w.company_name = 'Amazon'
+union
+select e.name
+from employee e
+join works w on e.e_id = w.e_id
+where w.company_name = 'Google';
+
+--- 18. list all employee names (allow duplicate values for names) from 'amazon' and 'google' using union all ---
+
+select e.name
+from employee e
+join works w on e.e_id = w.e_id
+where w.company_name = 'Amazon'
+union all
+select e.name
+from employee e
+join works w on e.e_id = w.e_id
+where w.company_name = 'Google';
+
+--- 19. list all employee details who are managers (emulate intersect) ---
+
+select * from employee
+where e_id in (select e_id from works)
+and e_id in (select e_id from manages);
+
+--- 20. list all employee details who are not managers (emulate minus) ---
+
+select * from employee
+where e_id in (select e_id from works)
+and e_id not in (select e_id from manages);
