@@ -1,0 +1,211 @@
+create table director (
+`d-id` int primary key auto_increment,
+fname varchar(100),
+lname varchar(100),
+gender char(1)
+);
+
+create table actor (
+`a-id` int primary key auto_increment,
+f_name varchar(100),
+l_name varchar(100),
+salary int
+);
+
+create table movie (
+`m-id` int primary key auto_increment,
+title varchar(255),
+release_date date,
+rank char(1),
+budget int
+);
+
+create table direct (
+`m-id` int,
+`d-id` int,
+primary key (`m-id`, `d-id`),
+foreign key (`m-id`) references movie(`m-id`) on delete cascade,
+foreign key (`d-id`) references director(`d-id`) on delete cascade
+);
+
+create table cast (
+`m-id` int,
+`a-id` int,
+role varchar(100),
+primary key (`m-id`, `a-id`),
+foreign key (`m-id`) references movie(`m-id`) on delete cascade,
+foreign key (`a-id`) references actor(`a-id`) on delete cascade
+);
+
+--- insert data ---
+
+insert into director (fname, lname, gender) values
+('Karan', 'Johar', 'M'),
+('Farah', 'Khan', 'F'),
+('Ramesh', 'Sippy', 'M'),
+('Nitesh', 'Tiwari', 'M'),
+('Anu', 'Menon', 'F'),
+('Some', 'Director', 'M');
+
+insert into actor (f_name, l_name, salary) values
+('Amitabh', 'Bachchan', 300000),
+('Shah Rukh', 'Khan', 250000),
+('Kajol', '', 150000),
+('Dharmendra', '', 210000),
+('Aamir', 'Khan', 400000),
+('Sanya', 'Malhotra', 100000),
+('Vidya', 'Balan', 180000);
+
+insert into movie (title, release_date, rank, budget) values
+('Sholay', '1975-08-15', 'A', 50000),
+('K3G', '2001-12-14', 'B', 10000),
+('Movie 2019 A', '2019-01-01', 'A', 10000),
+('Movie 2019 B', '2019-03-15', 'C', 10000),
+('Movie 2019 C', '2019-06-01', 'B', 10000),
+('Movie 2019 D', '2019-09-10', 'A', 10000),
+('Movie 2019 E', '2019-12-25', 'D', 10000),
+('Movie 2019 F', '2019-02-01', 'E', 10000),
+('Main Hoon Na', '2004-04-30', 'B', 8000),
+('Dangal', '2016-12-23', 'A', 12000),
+('Movie 2018', '2018-07-07', 'B', 7000),
+('Shakuntala Devi', '2020-07-31', 'C', 6000);
+
+insert into direct (`m-id`, `d-id`) values
+(1, 3),
+(2, 1),
+(3, 6),
+(4, 6),
+(5, 6),
+(6, 6),
+(7, 6),
+(8, 6),
+(9, 2),
+(10, 4),
+(11, 6),
+(12, 5);
+
+insert into cast (`m-id`, `a-id`, role) values
+(1, 1, 'Jai'),
+(1, 4, 'Veeru'),
+(2, 1, 'Yash'),
+(2, 2, 'Rahul'),
+(2, 3, 'Anjali'),
+(3, 5, 'Role 1'),
+(4, 6, 'Role 2'),
+(5, 7, 'Role 3'),
+(6, 1, 'Role 4'),
+(7, 2, 'Role 5'),
+(8, 3, 'Role 6'),
+(9, 2, 'Major Ram'),
+(10, 5, 'Mahavir'),
+(10, 6, 'Babita'),
+(11, 5, 'Role 7'),
+(12, 7, 'Shakuntala'),
+(12, 6, 'Anupama');
+
+--- sub-query 1. find all actors from 'sholay' and 'k3g'. ---
+
+select * from actor where `a-id` in (
+select `a-id` from cast where `m-id` in (
+select `m-id` from movie where title = 'Sholay' or title = 'K3G'
+)
+);
+
+--- sub-query 2. find movie title and director name of top 5 movie arranged in descending order in 2019. ---
+
+select m.title, (
+select concat(d.fname, ' ', d.lname) from director d where d.`d-id` = (
+select di.`d-id` from direct di where di.`m-id` = m.`m-id`
+)
+) as director_name
+from movie m
+where year(m.release_date) = 2019
+order by m.rank desc
+limit 5;
+
+--- sub-query 3. find total number of actors casted in each movie. ---
+
+select m.title, (
+select count(`a-id`)
+from cast c
+where c.`m-id` = m.`m-id`
+) as actor_count
+from movie m;
+
+--- sub-query 4. list role of actor having salary greater than 200000. ---
+
+select role from cast
+where `a-id` in (
+select `a-id` from actor where salary > 200000
+);
+
+--- sub-query 5. list movie details directed by female director. ---
+
+select * from movie
+where `m-id` in (
+select `m-id` from direct where `d-id` in (
+select `d-id` from director where gender = 'F'
+)
+);
+
+--- sub-query 6. find details of actors having maximum salary in each movie. ---
+
+select * from actor
+where `a-id` in (
+select c.`a-id`
+from cast c
+join actor a on c.`a-id` = a.`a-id`
+where (c.`m-id`, a.salary) in (
+select `m-id`, max(salary)
+from cast
+join actor on cast.`a-id` = actor.`a-id`
+group by `m-id`
+)
+);
+
+--- join 7. list all movie details directed by 'karan johar' (natural join) ---
+
+select m.*
+from (director natural join direct) as dd
+join movie m on dd.`m-id` = m.`m-id`
+where dd.fname = 'Karan' and dd.lname = 'Johar';
+
+--- join 8. find all possible combination of roles can be assigned to each actor (cross join) ---
+
+select a.f_name, a.l_name, c.role
+from actor a
+cross join cast c;
+
+--- join 9. show all movie details and director details of the movies released in year 2018-19. (left outer join) ---
+
+select m.*, d.*
+from movie m
+left outer join direct di on m.`m-id` = di.`m-id`
+left outer join director d on di.`d-id` = d.`d-id`
+where year(m.release_date) between 2018 and 2019;
+
+--- join 10. give all actors details not casted in 'dangal' (right outer join) ---
+
+select a.*
+from (
+cast c
+join movie m on c.`m-id` = m.`m-id` and m.title = 'Dangal'
+)
+right outer join actor a on c.`a-id` = a.`a-id`
+where c.`m-id` is null;
+
+--- join 11. (part 1) list details of movies not staring by 'amitabh bachchan' ---
+
+select m.*
+from movie m
+left join cast c on m.`m-id` = c.`m-id`
+left join actor a on c.`a-id` = a.`a-id` and a.f_name = 'Amitabh' and a.l_name = 'Bachchan'
+where a.`a-id` is null;
+
+--- join 11. (part 2) and actor details not casted in 'shakuntala devi' ---
+
+select a.*
+from actor a
+left join cast c on a.`a-id` = c.`a-id`
+left join movie m on c.`m-id` = m.`m-id` and m.title = 'Shakuntala Devi'
+where m.`m-id` is null;
