@@ -1,0 +1,139 @@
+create table Stud_Marks (
+name VARCHAR(100),
+total_marks INT
+);
+
+create table Result (
+Roll INT AUTO_INCREMENT PRIMARY KEY,
+Name VARCHAR(100),
+Class VARCHAR(50)
+);
+
+delimiter //
+
+create function Grade_Categorization (marks INT) 
+returns VARCHAR(50)
+deterministic
+begin
+declare grade VARCHAR(50);
+    
+declare continue handler for sqlexception
+signal sqlstate '45000' set message_text = 'Invalid Marks Value';
+    
+if marks < 0 OR marks > 1500 then
+signal sqlstate '45000' set message_text = 'Marks must be between 0 and 1500';
+end if;
+    
+if marks >= 990 AND marks <= 1500 then
+set grade = 'Distinction';
+elseif marks >= 900 AND marks <= 989 then
+set grade = 'First Class';
+elseif marks >= 825 AND marks <= 899 then
+set grade = 'Higher Second Class';
+else
+set grade = 'Not Categorized';
+end if;
+
+return grade;
+end //
+
+delimiter ;
+delimiter //
+
+create procedure proc_Grade()
+begin
+declare done INT DEFAULT 0;
+declare v_name VARCHAR(100);
+declare v_total_marks INT;
+declare v_grade VARCHAR(50);
+    
+declare student_cursor cursor for 
+select name, total_marks from Stud_Marks;
+    
+declare continue handler for not found set done = 1;
+
+declare continue handler for sqlexception
+signal sqlstate '45000' set message_text = 'Error occurred during procedure execution';
+
+open student_cursor;
+
+read_loop: loop
+fetch student_cursor into v_name, v_total_marks;
+if done then
+leave read_loop;
+end if;
+        
+begin
+declare continue handler for sqlexception
+set v_grade = 'Error in Grade Categorization';
+set v_grade = Grade_Categorization(v_total_marks);
+end;
+        
+insert into Result (Name, Class) values (v_name, v_grade);
+end loop;
+
+close student_cursor;
+
+commit;
+end //
+
+delimiter ;
+
+insert into Stud_Marks (name, total_marks) 
+values 
+('Aarav', 1200),
+('Isha', 950),
+('Ravi', 880),
+('Priya', 800);
+
+call proc_Grade();
+
+select * from Result;
+
+create table library (
+library_id int auto_increment primary key,
+title varchar(255) not null
+);
+
+create table library_audit (
+audit_id int auto_increment primary key,
+action_type enum('update', 'delete') not null,
+library_id int not null,
+old_title varchar(255),
+action_time timestamp default current_timestamp
+);
+
+delimiter //
+
+create trigger before_library_update
+before update on library
+for each row
+begin
+insert into library_audit (action_type, library_id, old_title)
+values ('update', old.library_id, old.title);
+end //
+
+delimiter ;
+delimiter //
+
+create trigger before_library_delete
+before delete on library
+for each row
+begin
+insert into library_audit (action_type, library_id, old_title)
+values ('delete', old.library_id, old.title);
+end //
+
+delimiter ;
+
+insert into library (title)
+values ('to kill a mockingbird');
+
+update library
+set title = '1984'
+where title = 'to kill aL a mockingbird';
+
+delete from library
+where title = '1984';
+
+select * from library_audit;
