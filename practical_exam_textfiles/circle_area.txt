@@ -1,0 +1,23 @@
+create table areas(
+radius decimal(5,2),
+area decimal(10,2)
+);
+
+delimiter //
+create procedure calculate_area()
+begin
+declare radius decimal(5,2);
+declare area decimal(10,2);
+declare i int default 5;
+while i <= 9 do
+set radius = i;
+set area = 3.14159 * radius * radius;
+insert into areas(radius, area) values (radius, area);
+set i = i + 1;
+end while;
+end//
+delimiter ;
+
+call calculate_area();
+
+select * from areas;
