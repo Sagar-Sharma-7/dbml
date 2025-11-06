@@ -1,0 +1,113 @@
+create table director (
+`d-id` int primary key auto_increment,
+fname varchar(100),
+lname varchar(100),
+gender char(1)
+);
+
+create table actor (
+`a-id` int primary key auto_increment,
+f_name varchar(100),
+l_name varchar(100)
+);
+
+create table movie (
+`m-id` int primary key auto_increment,
+title varchar(255),
+release_date date,
+rank char(1)
+);
+
+create table direct (
+`m-id` int,
+`d-id` int,
+primary key (`m-id`, `d-id`),
+foreign key (`m-id`) references movie(`m-id`) on delete cascade,
+foreign key (`d-id`) references director(`d-id`) on delete cascade
+);
+
+create table cast (
+`m-id` int,
+`a-id` int,
+role varchar(100),
+primary key (`m-id`, `a-id`),
+foreign key (`m-id`) references movie(`m-id`) on delete cascade,
+foreign key (`a-id`) references actor(`a-id`) on delete cascade
+);
+
+insert into director (fname, lname, gender) values
+('Rajkumar', 'Hirani', 'M'),
+('S.S.', 'Rajamouli', 'M'),
+('Zoya', 'Akhtar', 'F');
+insert into actor (f_name, l_name) values
+('Aamir', 'Khan'),
+('Shah Rukh', 'Khan'),
+('Prabhas', 'Raju'),
+('Ranveer', 'Singh');
+insert into movie (title, release_date, rank) values
+('3 Idiots', '2009-12-25', 'A'),
+('PK', '2014-12-19', 'A'),
+('RRR', '2022-03-25', 'B'),
+('Gully Boy', '2019-02-14', 'B');
+insert into direct (`m-id`, `d-id`) values
+(1, 1),
+(2, 1),
+(3, 2),
+(4, 3);
+insert into cast (`m-id`, `a-id`, role) values
+(1, 1, 'Rancho'),
+(2, 1, 'PK'),
+(3, 3, 'Raju'),
+(4, 4, 'Murad');
+
+alter table movie add column genre varchar(50);
+
+update movie set genre = 'Comedy/Drama' where `m-id` in (1, 2);
+update movie set genre = 'Action' where `m-id` = 3;
+update movie set genre = 'Musical/Drama' where `m-id` = 4;
+
+
+create view hirani_movies as
+select m.title, m.release_date, m.rank
+from movie m
+join direct d on m.`m-id` = d.`m-id`
+join director dir on d.`d-id` = dir.`d-id`
+where dir.fname = 'Rajkumar' and dir.lname = 'Hirani';
+
+select * from hirani_movies;
+
+alter view hirani_movies as
+select m.title, m.release_date, m.rank
+from movie m
+join direct d on m.`m-id` = d.`m-id`
+join director dir on d.`d-id` = dir.`d-id`
+where dir.fname = 'Rajkumar' and dir.lname = 'Hirani'
+and m.rank = 'A';
+
+select * from hirani_movies;
+
+rename table hirani_movies to hirani_a_rank_movies;
+select * from hirani_a_rank_movies;
+create view khan_actors as
+select `a-id`, f_name, l_name
+from actor
+where l_name = 'Khan';
+
+select * from khan_actors;
+
+insert into khan_actors (f_name, l_name) values ('Salman', 'Khan');
+update khan_actors set f_name = 'Aamir H.' where f_name = 'Aamir';
+delete from khan_actors where f_name = 'Salman';
+select * from actor;
+
+
+create index idx_actor_name on actor (f_name, l_name);
+create index idx_cast_link on cast (`m-id`, `a-id`);
+drop index idx_actor_name on actor;
+create index idx_actor_lastname on actor (l_name);
+drop index idx_cast_link on cast;
+
+
+alter table actor auto_increment = 100;
+insert into actor (f_name, l_name) values ('Varun', 'Dhawan');
+select * from actor where `a-id` = 100;
