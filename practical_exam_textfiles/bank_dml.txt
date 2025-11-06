@@ -1,0 +1,199 @@
+create table branch (
+branch_name varchar(100) primary key,
+branch_city varchar(100),
+assets decimal(15, 2)
+);
+
+
+create table customer (
+`c-id` int primary key auto_increment,
+cname varchar(100),
+street varchar(255),
+city varchar(100)
+);
+
+create table loan (
+loan_no int primary key auto_increment,
+branch_name varchar(100),
+amount decimal(12, 2),
+foreign key (branch_name) references branch(branch_name)
+);
+
+
+create table borrower (
+`c-id` int,
+loan_no int,
+primary key (`c-id`, loan_no),
+foreign key (`c-id`) references customer(`c-id`),
+foreign key (loan_no) references loan(loan_no)
+);
+
+
+create table account (
+account_no int primary key auto_increment,
+branch_name varchar(100),
+balance decimal(10, 2),
+foreign key (branch_name) references branch(branch_name)
+);
+
+
+create table depositor (
+`c-id` int,
+account_no int,
+primary key (`c-id`, account_no),
+foreign key (`c-id`) references customer(`c-id`),
+foreign key (account_no) references account(account_no)
+);
+
+
+insert into branch (branch_name, branch_city, assets) values
+('SBI-Pune', 'Pune', 9000000),
+('HDFC-Mumbai', 'Mumbai', 12000000),
+('ICICI-Pune', 'Pune', 7500000),
+('Axis-Delhi', 'Delhi', 5000000);
+
+insert into customer (cname, street, city) values
+('Amit', 'MG Road', 'Pune'),
+('Neha', 'Link Road', 'Mumbai'),
+('Ravi', 'FC Road', 'Pune'),
+('Karan', 'Main St', 'Delhi'),
+('Sneha', 'LBS Marg', 'Mumbai');
+
+insert into account (branch_name, balance) values
+('SBI-Pune', 25000),
+('HDFC-Mumbai', 40000),
+('ICICI-Pune', 15000),
+('SBI-Pune', 80000),
+('Axis-Delhi', 10000);
+
+insert into depositor (`c-id`, account_no) values
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 5),
+(5, 4);
+
+insert into loan (branch_name, amount) values
+('SBI-Pune', 100000),
+('HDFC-Mumbai', 250000),
+('ICICI-Pune', 50000);
+
+insert into borrower (`c-id`, loan_no) values
+(1, 1),
+(2, 2),
+(3, 3);
+
+alter table account
+add column account_type varchar(20);
+
+update account
+set account_type = 'Saving'
+where balance > 30000;
+
+update account
+set account_type = 'Current'
+where balance <= 30000;
+
+insert into branch (branch_name, branch_city, assets) values
+('BOI-Nagpur', 'Nagpur', 4500000);
+
+insert into customer (street, city) values ('Main Road', 'Nagpur');
+
+select * from branch;
+select * from account;
+
+select `c-id`, cname from customer;
+
+select c.cname
+from customer c
+join borrower b on c.`c-id` = b.`c-id`
+join loan l on b.loan_no = l.loan_no
+where l.branch_name = 'HDFC-Mumbai';
+
+insert into account (branch_name, balance) values ('ICICI-Pune', 10000);
+insert into depositor (`c-id`, account_no) values (1, 6);
+select distinct `c-id` from depositor;
+
+update branch
+set branch_city = 'Pune-New'
+where branch_name = 'SBI-Pune';
+
+update loan
+set amount = amount + 100000
+where loan_no in (
+select loan_no from borrower where `c-id` = 1
+);
+
+delete from depositor
+where account_no in (
+select account_no from account where balance between 30000 and 80000
+);
+delete from account
+where balance between 30000 and 80000;
+
+select cname from customer where cname like 'R%';
+
+select distinct c.cname
+from customer c
+join borrower b on c.`c-id` = b.`c-id`
+join loan l on b.loan_no = l.loan_no
+where l.branch_name in ('SBI-Pune', 'HDFC-Mumbai', 'ICICI-Pune');
+
+select avg(balance) as avg_balance
+from account
+where branch_name = 'SBI-Pune';
+
+select count(distinct `c-id`) as customer_count
+from depositor d
+join account a on d.account_no = a.account_no
+where a.branch_name = 'SBI-Pune';
+
+select max(amount) as max_loan, min(amount) as min_loan
+from loan
+where branch_name = 'ICICI-Pune';
+
+select sum(balance) as total_balance
+from account
+where branch_name = 'SBI-Pune';
+
+select * from customer
+order by cname asc, city desc;
+
+select c.cname
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+where a.branch_name = 'SBI-Pune'
+union
+select c.cname
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+where a.branch_name = 'HDFC-Mumbai';
+
+select c.cname
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+where a.branch_name = 'SBI-Pune'
+union all
+select c.cname
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+where a.branch_name = 'HDFC-Mumbai';
+
+select distinct c.*
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+join borrower b on c.`c-id` = b.`c-id`
+join loan l on b.loan_no = l.loan_no
+where a.branch_name = 'SBI-Pune' and l.branch_name = 'SBI-Pune';
+
+select c.*
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+left join borrower b on c.`c-id` = b.`c-id`
+where a.branch_name = 'HDFC-Mumbai' and b.`c-id` is null;
