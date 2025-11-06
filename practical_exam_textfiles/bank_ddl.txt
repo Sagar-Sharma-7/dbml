@@ -1,0 +1,158 @@
+create table branch (
+branch_name varchar(100) primary key,
+branch_city varchar(100),
+assets decimal(15, 2)
+);
+
+
+create table customer (
+`c-id` int primary key auto_increment,
+cname varchar(100),
+street varchar(255),
+city varchar(100)
+);
+
+create table loan (
+loan_no int primary key auto_increment,
+branch_name varchar(100),
+amount decimal(12, 2),
+foreign key (branch_name) references branch(branch_name)
+);
+
+
+create table borrower (
+`c-id` int,
+loan_no int,
+primary key (`c-id`, loan_no),
+foreign key (`c-id`) references customer(`c-id`),
+foreign key (loan_no) references loan(loan_no)
+);
+
+-- create account table (using auto_increment for account_no) --
+create table account (
+account_no int primary key auto_increment,
+branch_name varchar(100),
+balance decimal(10, 2),
+foreign key (branch_name) references branch(branch_name)
+);
+
+
+create table depositor (
+`c-id` int,
+account_no int,
+primary key (`c-id`, account_no),
+foreign key (`c-id`) references customer(`c-id`),
+foreign key (account_no) references account(account_no)
+);
+
+
+insert into branch (branch_name, branch_city, assets) values
+('SBI-Pune', 'Pune', 9000000),
+('HDFC-Mumbai', 'Mumbai', 12000000),
+('ICICI-Pune', 'Pune', 7500000),
+('Axis-Delhi', 'Delhi', 5000000);
+
+insert into customer (cname, street, city) values
+('Amit', 'MG Road', 'Pune'),
+('Neha', 'Link Road', 'Mumbai'),
+('Ravi', 'FC Road', 'Pune'),
+('Karan', 'Main St', 'Delhi'),
+('Sneha', 'LBS Marg', 'Mumbai');
+
+insert into account (branch_name, balance) values
+('SBI-Pune', 25000),
+('HDFC-Mumbai', 40000),
+('ICICI-Pune', 15000),
+('SBI-Pune', 80000),
+('Axis-Delhi', 10000);
+
+insert into depositor (`c-id`, account_no) values
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 5),
+(5, 4);
+
+insert into loan (branch_name, amount) values
+('SBI-Pune', 100000),
+('HDFC-Mumbai', 250000),
+('ICICI-Pune', 50000);
+
+insert into borrower (`c-id`, loan_no) values
+(1, 1),
+(2, 2),
+(3, 3);
+
+alter table account
+add column account_type varchar(20);
+
+update account
+set account_type = 'Saving'
+where balance > 30000;
+
+update account
+set account_type = 'Current'
+where balance <= 30000;
+
+update branch
+set assets = 9500000
+where branch_name = 'SBI-Pune';
+
+create view pune_customers as
+select c.cname, c.city, a.branch_name
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+where a.branch_name like '%Pune%';
+
+select * from pune_customers;
+
+alter view pune_customers as
+select c.cname, c.city, a.branch_name, a.balance
+from customer c
+join depositor d on c.`c-id` = d.`c-id`
+join account a on d.account_no = a.account_no
+where a.branch_name like '%Pune%' and a.balance > 20000;
+
+select * from pune_customers;
+
+rename table pune_customers to pune_rich_customers;
+
+select * from pune_rich_customers;
+
+create view customer_view as
+select `c-id`, cname, city
+from customer
+where city = 'Pune';
+
+select * from customer_view;
+
+insert into customer_view (cname, city) values ('Priya', 'Pune');
+
+update customer_view
+set cname = 'Ravi Sharma'
+where cname = 'Ravi';
+
+delete from customer_view
+where cname = 'Priya';
+
+select * from customer;
+
+create index idx_cname
+on customer (cname);
+
+create index idx_depositor_link
+on depositor (`c-id`, account_no);
+
+drop index idx_cname
+on customer;
+
+create index idx_cname
+on customer (cname);
+
+alter table customer auto_increment = 100;
+
+nsert into customer (cname, street, city) values ('Rohan', 'JM Road', 'Pune');
+
+select * from customer where cname = 'Rohan';
+
