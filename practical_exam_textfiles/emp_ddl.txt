@@ -1,0 +1,124 @@
+create table employee (
+`e-id` int primary key auto_increment,
+name varchar(100),
+street varchar(100),
+city varchar(100)
+);
+
+create table company (
+company_name varchar(100) primary key,
+city varchar(100)
+);
+
+create table works (
+`e-id` int,
+company_name varchar(100),
+salary int,
+primary key (`e-id`, company_name),
+foreign key (`e-id`) references employee(`e-id`) on delete cascade,
+foreign key (company_name) references company(company_name) on delete cascade
+);
+
+create table manages (
+`e-id` int,
+dept_name varchar(100),
+primary key (`e-id`, dept_name),
+foreign key (`e-id`) references employee(`e-id`) on delete cascade
+);
+
+--- insert sample data ---
+
+insert into employee (name, street, city) values
+('Amit Kumar', 'MG Road', 'Pune'),
+('Neha Sharma', 'Link Road', 'Mumbai'),
+('Ravi Verma', 'FC Road', 'Pune'),
+('Karan Singh', 'Main St', 'Delhi'),
+('Sneha Patil', 'LBS Marg', 'Mumbai');
+
+insert into company (company_name, city) values
+('ABC Corp', 'Pune'),
+('XYZ Tech', 'Mumbai'),
+('PQR Sol', 'Delhi'),
+('LMN Ltd', 'Pune');
+
+insert into works (`e-id`, company_name, salary) values
+(1, 'ABC Corp', 60000),
+(2, 'XYZ Tech', 70000),
+(3, 'ABC Corp', 45000),
+(4, 'PQR Sol', 80000),
+(5, 'XYZ Tech', 55000);
+
+insert into manages (`e-id`, dept_name) values
+(1, 'HR'),
+(4, 'Tech');
+
+--- alter table example ---
+
+alter table employee add column join_date date;
+
+--- update table example ---
+
+update employee set join_date = '2020-05-10' where `e-id` = 1;
+
+update works set salary = 65000 where `e-id` = 1;
+
+--- task 2: view commands ---
+
+create view abc_employees as
+select e.name, e.city, w.salary
+from employee e
+join works w on e.`e-id` = w.`e-id`
+where w.company_name = 'ABC Corp';
+
+select * from abc_employees;
+
+alter view abc_employees as
+select e.name, e.city, w.salary
+from employee e
+join works w on e.`e-id` = w.`e-id`
+where w.company_name = 'ABC Corp' and w.salary > 50000;
+
+select * from abc_employees;
+
+rename table abc_employees to abc_high_earners;
+
+select * from abc_high_earners;
+
+--- dml operations on views ---
+
+create view pune_employees as
+select `e-id`, name, city
+from employee
+where city = 'Pune';
+
+select * from pune_employees;
+
+insert into pune_employees (name, city) values ('Priya Rao', 'Pune');
+
+update pune_employees set name = 'Amit K.' where name = 'Amit Kumar';
+
+delete from pune_employees where name = 'Priya Rao';
+
+select * from employee;
+
+--- task 3: index commands ---
+
+create index idx_emp_name on employee (name);
+
+create index idx_comp_name on company (company_name);
+
+drop index idx_emp_name on employee;
+
+alter table employee add index idx_emp_city (city);
+
+drop index idx_comp_name on company;
+
+--- task 4: sequence commands ---
+
+show table status like 'employee';
+
+alter table employee auto_increment = 100;
+
+insert into employee (name, street, city) values ('Rohan Joshi', 'JM Road', 'Pune');
+
+select * from employee where `e-id` = 100;
