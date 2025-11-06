@@ -1,0 +1,250 @@
+create table director (
+`d-id` int primary key auto_increment,
+fname varchar(100),
+lname varchar(100),
+gender char(1)
+);
+
+create table actor (
+`a-id` int primary key auto_increment,
+f_name varchar(100),
+l_name varchar(100)
+);
+
+create table movie (
+`m-id` int primary key auto_increment,
+title varchar(255),
+release_date date,
+rank char(1)
+);
+
+create table direct (
+`m-id` int,
+`d-id` int,
+primary key (`m-id`, `d-id`),
+foreign key (`m-id`) references movie(`m-id`) on delete cascade,
+foreign key (`d-id`) references director(`d-id`) on delete cascade
+);
+
+create table cast (
+`m-id` int,
+`a-id` int,
+role varchar(100),
+primary key (`m-id`, `a-id`),
+foreign key (`m-id`) references movie(`m-id`) on delete cascade,
+foreign key (`a-id`) references actor(`a-id`) on delete cascade
+);
+
+--- 1. insert values into above created tables ---
+
+insert into director (fname, lname, gender) values
+('Yash', 'Chopra', 'M'),
+('Rajkumar', 'Hirani', 'M'),
+('Siddharth', 'Anand', 'M'),
+('Ashutosh', 'Gowariker', 'M'),
+('Nitesh', 'Tiwari', 'M'),
+('Indra', 'Kumar', 'M'),
+('Ramesh', 'Sippy', 'M');
+
+insert into actor (f_name, l_name) values
+('Aamir', 'Khan'),
+('Hrithik', 'Roshan'),
+('Tiger', 'Shroff'),
+('Akshay', 'Kumar'),
+('Anil', 'Kapoor'),
+('Jackie', 'Shroff'),
+('Amitabh', 'Bachchan'),
+('Dharmendra', ''),
+('Sanjay', 'Sharma'),
+('Sanjay', 'Sharma');
+
+insert into movie (title, release_date, rank) values
+('PK', '2014-12-19', 'A'),
+('War', '2019-10-02', 'A'),
+('Lagaan', '2001-06-15', 'A'),
+('Dangal', '2016-12-23', 'A'),
+('Airlift', '2016-01-22', 'B'),
+('Ram-Lakhan', '1989-01-27', 'B'),
+('Sholay', '1975-08-15', 'A'),
+('Kites', '2010-05-21', 'C'),
+('Veer-Zaara', '2004-11-12', 'A');
+
+insert into direct (`m-id`, `d-id`) values
+(1, 2),
+(2, 3),
+(3, 4),
+(4, 5),
+(6, 6),
+(7, 7),
+(9, 1);
+
+insert into cast (`m-id`, `a-id`, role) values
+(1, 1, 'PK'),
+(2, 2, 'Kabir'),
+(2, 3, 'Khalid'),
+(3, 1, 'Bhuvan'),
+(4, 1, 'Mahavir'),
+(5, 4, 'Ranjit'),
+(6, 5, 'Lakhan'),
+(6, 6, 'Ram'),
+(7, 7, 'Jai'),
+(7, 8, 'Veeru'),
+(1, 9, 'Musician'),
+(3, 9, 'Cricketer'),
+(4, 3, 'Young Wrestler');
+
+--- 2. insert values into only selected columns ---
+
+insert into movie (title, release_date) values ('New Movie', '2025-01-01');
+
+--- 3. select all values from movie and actor tables. ---
+
+select * from movie;
+
+select * from actor;
+
+--- 4. select m-id and title from movie table. ---
+
+select `m-id`, title from movie;
+
+--- 5. select details of movie directed by 'yash chopra'. ---
+
+select m.*
+from movie m
+join direct d on m.`m-id` = d.`m-id`
+join director dir on d.`d-id` = dir.`d-id`
+where dir.fname = 'Yash' and dir.lname = 'Chopra';
+
+--- 6. select list of all distinct f_name and l_name from actor table. ---
+
+select distinct f_name, l_name from actor;
+
+--- 7. update 'sholay' release date and add pay column in actor table. ---
+
+alter table actor add column pay int;
+
+update actor set pay = 100000 where `a-id` = 1;
+update actor set pay = 120000 where `a-id` = 2;
+update actor set pay = 80000 where `a-id` = 3;
+update actor set pay = 150000 where `a-id` = 4;
+update actor set pay = 90000 where `a-id` = 5;
+update actor set pay = 85000 where `a-id` = 6;
+update actor set pay = 200000 where `a-id` = 7;
+update actor set pay = 180000 where `a-id` = 8;
+update actor set pay = 50000 where `a-id` = 9;
+update actor set pay = 60000 where `a-id` = 10;
+
+update movie
+set release_date = '1975-08-16'
+where title = 'Sholay';
+
+--- 8. update (increase) the pay of actor working in 'ram-lakhan' by 60000 rs. ---
+
+update actor
+set pay = pay + 60000
+where `a-id` in (
+select `a-id` from cast where `m-id` in (
+select `m-id` from movie where title = 'Ram-Lakhan'
+)
+);
+
+--- 9. delete records of all actors having pay between 40000 rs and 70000 rs. ---
+
+delete from cast
+where `a-id` in (
+select `a-id` from (
+select `a-id` from actor where pay between 40000 and 70000
+) as temp
+);
+
+delete from actor
+where pay between 40000 and 70000;
+
+--- 10. select all movie names where title starts with 'k'. ---
+
+select title from movie where title like 'K%';
+
+--- 11. list all actors from ('dangal', 'war', 'pk') movies.(in operator) ---
+
+select distinct a.*
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title in ('Dangal', 'War', 'PK');
+
+--- 12. what is the average pay of actors casted in 'airlift'. ---
+
+select avg(a.pay) as average_pay
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title = 'Airlift';
+
+--- 13. find total number of actors working in 'lagaan'. ---
+
+select count(distinct `a-id`) as total_actors
+from cast
+where `m-id` in (
+select `m-id` from movie where title = 'Lagaan'
+);
+
+--- 14. find maximum and minimum pay of actor in 'pk'. ---
+
+select max(a.pay) as max_pay, min(a.pay) as min_pay
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title = 'PK';
+
+--- 15. find total amount spent on salaries of actors of 'war'. ---
+
+select sum(a.pay) as total_salary_spent
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title = 'War';
+
+--- 16. list all details of movie, sorted ascending by title and descending by release date. ---
+
+select * from movie
+order by title asc, release_date desc;
+
+--- 17. list all actor names from 'lagaan' and 'sholay' using union. ---
+
+select a.f_name, a.l_name
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title = 'Lagaan'
+union
+select a.f_name, a.l_name
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title = 'Sholay';
+
+--- 18. list all actor names (allow duplicate values for names) from 'pk' and 'war' using union all ---
+
+select a.f_name, a.l_name
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title = 'PK'
+union all
+select a.f_name, a.l_name
+from actor a
+join cast c on a.`a-id` = c.`a-id`
+join movie m on c.`m-id` = m.`m-id`
+where m.title = 'War';
+
+--- 19. list all actor ids casted in 'lagaan' and 'pk'. (emulate intersect) ---
+
+select `a-id` from cast where `m-id` in (select `m-id` from movie where title = 'Lagaan')
+and `a-id` in
+(select `a-id` from cast where `m-id` in (select `m-id` from movie where title = 'PK'));
+
+--- 20. list all actor ids casted in 'dangal' but not in 'war' (emulate minus) ---
+
+select `a-id` from cast where `m-id` in (select `m-id` from movie where title = 'Dangal')
+and `a-id` not in
+(select `a-id` from cast where `m-id` in (select `m-id` from movie where title = 'War'));
