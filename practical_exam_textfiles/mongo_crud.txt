@@ -1,0 +1,33 @@
+db.student.insertMany([
+{ name: "Ram", rollNo: 101, marks: 85, CGPA: 9.2, branch: "Computer Science", nativeCity: "Delhi" },
+{ name: "Sita", rollNo: 102, marks: 88, CGPA: 8.6, branch: "IT", nativeCity: "Mumbai" },
+{ name: "Shyam", rollNo: 103, marks: 75, CGPA: 7.9, branch: "Electrical", nativeCity: "Kolkata" },
+{ name: "Ravi", rollNo: 104, marks: 90, CGPA: 9.5, branch: "Computer Science", nativeCity: "Bangalore" },
+{ name: "Priya", rollNo: 105, marks: 80, CGPA: 8.2, branch: "Electronics", nativeCity: "Chennai" },
+{ name: "Amit", rollNo: 106, marks: 95, CGPA: 9.8, branch: "Computer Science", nativeCity: "Delhi" },
+{ name: "Geeta", rollNo: 107, marks: 78, CGPA: 8.0, branch: "Civil", nativeCity: "Hyderabad" }
+])
+
+db.student.find()
+
+db.student.updateOne(
+{ name: "Ram" },
+{ $set: { marks: 90 } }
+)
+
+db.student.find({ $or: [{ CGPA: { $gte: 9 } }, { branch: "Computer Science" }] }).pretty()
+
+db.student.find({ branch: { $ne: "IT" } }).pretty()
+
+db.student.find({ CGPA: 7, nativeCity: "Mumbai" }).pretty()
+
+db.student.find({
+$nor: [{ CGPA: { $eq: 9 } }, { branch: "Computer Science" }]
+}).pretty()
+
+db.student.save({ name: "Nisha", rollNo: 108, marks: 88, CGPA: 8.1, branch: "Computer Science", nativeCity: "Mumbai" })
+
+db.student.deleteOne({ name: "Sita" })
+
+
+db.student.find({ branch: "Computer Science" }).sort({ CGPA: -1 }).limit(1).pretty()
