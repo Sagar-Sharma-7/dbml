@@ -28,7 +28,7 @@ foreign key (`c-id`) references customer(`c-id`),
 foreign key (loan_no) references loan(loan_no)
 );
 
--- create account table (using auto_increment for account_no) --
+
 create table account (
 account_no int primary key auto_increment,
 branch_name varchar(100),
