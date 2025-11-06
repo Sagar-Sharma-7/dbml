@@ -1,0 +1,42 @@
+db.students.insertMany([
+{ _id: 1, name: "Amit", age: 15, marks: 85, city: "Delhi" },
+{ _id: 2, name: "Priya", age: 14, marks: 90, city: "Mumbai" },
+{ _id: 3, name: "Ravi", age: 16, marks: 78, city: "Kolkata" },
+{ _id: 4, name: "Simran", age: 17, marks: 88, city: "Bangalore" }
+])
+
+db.students.aggregate([
+{
+$group: {
+_id: null, 
+averageMarks: { $avg: "$marks" }
+}
+}
+])
+
+db.students.aggregate([
+{
+$group: {
+_id: "$city", 
+totalStudents: { $sum: 1 } 
+}
+}
+])
+
+db.students.aggregate([
+{ $sort: { marks: -1 } } 
+])
+
+db.students.createIndex({ city: 1 })
+
+db.students.find({ city: "Delhi" })
+
+db.students.aggregate([
+{ $match: { city: { $in: ["Delhi", "Mumbai"] } } }, 
+{
+$group: {
+_id: "$city", 
+averageMarks: { $avg: "$marks" } 
+}
+}
+])
