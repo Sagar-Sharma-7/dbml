@@ -1,0 +1,33 @@
+db.students.insertMany([
+{ name: "Amit", branch: "Computer", marks: 70 },
+{ name: "Neha", branch: "IT", marks: 65 },
+{ name: "Ravi", branch: "Computer", marks: 92 },
+{ name: "Karan", branch: "Mechanical", marks: 40 },
+{ name: "Sneha", branch: "Computer", marks: 90 },
+{ name: "Priya", branch: "IT", marks: 85 },
+{ name: "Rahul", branch: "Civil", marks: 55 },
+{ name: "Ajay", branch: "Mechanical", marks: 75 }
+]);
+
+var mapfn = function() {
+emit(this.branch, { name: this.name, score: this.marks });
+};
+
+var reducefn = function(key, values) {
+var topper = values[0];
+
+for (var i = 1; i < values.length; i++) {
+if (values[i].score > topper.score) {
+topper = values[i];
+}
+}
+return topper;
+};
+
+db.students.mapReduce(
+mapfn,
+reducefn,
+{ out: "branch_toppers_by_marks" }
+);
+
+db.branch_toppers_by_marks.find();
