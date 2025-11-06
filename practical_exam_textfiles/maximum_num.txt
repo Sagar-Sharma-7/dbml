@@ -1,0 +1,14 @@
+delimiter //
+create procedure find_max_number(in num1 int, in num2 int, in num3 int)
+begin
+declare result int;
+if num1 >= num2 and num1 >= num3 then
+set result = num1;
+elseif num2 >= num1 and num2 >= num3 then
+set result = num2;
+else
+set result = num3;
+end if;
+select concat('Maximum ', result) as result;
+end //
+delimiter ;
